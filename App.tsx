@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, View, Pressable } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Text } from './src/components';
 import { theme } from './src/theme';
+import { createAppAuthService, type AuthSession } from './src/services/auth';
 import {
   DashboardScreen,
   InsightsScreen,
@@ -11,6 +12,7 @@ import {
   SettingsScreen,
   TransactionsScreen
 } from './src/screens';
+import { startIngestRuntime, stopIngestRuntime } from './src/services/ingest/runtime';
 
 type Tab = 'home' | 'transactions' | 'review' | 'insights' | 'settings';
 
@@ -23,12 +25,83 @@ const tabs: { key: Tab; label: string }[] = [
 ];
 
 export default function App() {
-  const [onboarded, setOnboarded] = useState(false);
+  const [authService] = useState(() => createAppAuthService());
+  const [authReady, setAuthReady] = useState(false);
+  const [session, setSession] = useState<AuthSession | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
   const [tab, setTab] = useState<Tab>('home');
 
+  useEffect(() => {
+    if (!session) {
+      stopIngestRuntime();
+      return;
+    }
+
+    startIngestRuntime();
+
+    return () => {
+      stopIngestRuntime();
+    };
+  }, [session]);
+
+  useEffect(() => {
+    let active = true;
+
+    const bootstrap = async () => {
+      try {
+        const nextSession = await authService.getSession();
+        if (!active) {
+          return;
+        }
+        setSession(nextSession);
+      } finally {
+        if (active) {
+          setAuthReady(true);
+        }
+      }
+    };
+
+    bootstrap();
+
+    const subscription = authService.onAuthStateChange((event) => {
+      if (!active) {
+        return;
+      }
+
+      setSession(event.session);
+      if (!event.session) {
+        setTab('home');
+      }
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [authService]);
+
+  const handleSignOut = async () => {
+    try {
+      setSigningOut(true);
+      await authService.signOut();
+      setSession(null);
+      setTab('home');
+    } finally {
+      setSigningOut(false);
+    }
+  };
+
   const screen = useMemo(() => {
-    if (!onboarded) {
-      return <OnboardingScreen onContinue={() => setOnboarded(true)} />;
+    if (!authReady) {
+      return (
+        <View style={styles.loadingWrap}>
+          <Text tone="secondary">Checking session...</Text>
+        </View>
+      );
+    }
+
+    if (!session) {
+      return <OnboardingScreen authService={authService} onContinue={(nextSession) => setSession(nextSession)} />;
     }
 
     switch (tab) {
@@ -41,17 +114,17 @@ export default function App() {
       case 'insights':
         return <InsightsScreen />;
       case 'settings':
-        return <SettingsScreen />;
+        return <SettingsScreen onSignOut={handleSignOut} signingOut={signingOut} />;
       default:
         return <DashboardScreen />;
     }
-  }, [onboarded, tab]);
+  }, [authReady, authService, session, signingOut, tab]);
 
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={styles.scroll}>{screen}</ScrollView>
-      {onboarded ? (
+      {session ? (
         <View style={styles.tabBar}>
           {tabs.map((item) => {
             const active = tab === item.key;
@@ -77,6 +150,12 @@ const styles = StyleSheet.create({
   scroll: {
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.lg
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: theme.spacing.xxxl
   },
   tabBar: {
     flexDirection: 'row',

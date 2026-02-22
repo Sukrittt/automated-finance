@@ -20,6 +20,7 @@ Android-first React Native (Expo) app for automatic UPI expense tracking with mi
 - plans/api-contracts.md
 - plans/data-model.md
 - plans/test-plan.md
+- plans/privacy-faq.md
 
 ## Run
 1. Create env file: `cp .env.example .env`
@@ -27,6 +28,7 @@ Android-first React Native (Expo) app for automatic UPI expense tracking with mi
 3. Install dependencies: `npm install`
 4. Start Expo: `npm run start`
 5. Press `a` for Android emulator/device
+6. Run snapshot + unit tests: `npm test`
 
 ## Environment variables
 - `EXPO_PUBLIC_APP_ENV`: `development|staging|production` (default: `development`)
