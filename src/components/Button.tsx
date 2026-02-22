@@ -7,14 +7,22 @@ interface Props {
   label: string;
   onPress?: () => void;
   variant?: 'primary' | 'outline' | 'ghost';
+  disabled?: boolean;
   style?: ViewStyle;
 }
 
-export function Button({ label, onPress, variant = 'primary', style }: Props) {
+export function Button({ label, onPress, variant = 'primary', disabled = false, style }: Props) {
   return (
     <Pressable
+      disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.base, variantStyles[variant], pressed && styles.pressed, style]}
+      style={({ pressed }) => [
+        styles.base,
+        variantStyles[variant],
+        pressed && !disabled && styles.pressed,
+        disabled && styles.disabled,
+        style
+      ]}
     >
       <Text size="body" weight="600" tone={variant === 'primary' ? 'primary' : 'secondary'}>
         {label}
@@ -34,6 +42,9 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.8,
     transform: [{ scale: 0.98 }]
+  },
+  disabled: {
+    opacity: 0.45
   }
 });
 

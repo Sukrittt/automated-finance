@@ -19,3 +19,9 @@
 - No critical UI clipping on small screens.
 - Crash-free session target achieved in beta.
 - Primary parse and categorization metrics pass thresholds.
+
+## QA-T1 Baseline Setup
+- Snapshot runner: Jest (`jest-expo` preset) via `npm test`.
+- Baseline file: `tests/ui/__snapshots__/screens.snapshot.test.tsx.snap`.
+- Source snapshots: `tests/ui/screens.snapshot.test.tsx`.
+- Update snapshots intentionally with `npm run test:update`.

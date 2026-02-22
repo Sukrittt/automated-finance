@@ -3,7 +3,12 @@ import { View, StyleSheet } from 'react-native';
 import { Button, Card, Text } from '../components';
 import { theme } from '../theme';
 
-export function SettingsScreen() {
+interface Props {
+  onSignOut?: () => void;
+  signingOut?: boolean;
+}
+
+export function SettingsScreen({ onSignOut, signingOut = false }: Props) {
   return (
     <View style={styles.container}>
       <Text size="h1" weight="700">
@@ -30,6 +35,12 @@ export function SettingsScreen() {
       <View style={styles.actions}>
         <Button label="Export Data" variant="outline" />
         <Button label="Delete Account" variant="ghost" />
+        <Button
+          label={signingOut ? 'Signing Out...' : 'Sign Out'}
+          variant="outline"
+          onPress={onSignOut}
+          disabled={signingOut}
+        />
       </View>
     </View>
   );

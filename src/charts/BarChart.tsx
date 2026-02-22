@@ -9,6 +9,37 @@ interface Props {
   title: string;
 }
 
+const MAX_VISIBLE_X_LABELS = 6;
+const AXIS_LABEL_MAX_CHARS = 6;
+
+function getAxisLabelStep(labelCount: number): number {
+  if (labelCount <= 1) {
+    return 1;
+  }
+
+  return Math.ceil(labelCount / MAX_VISIBLE_X_LABELS);
+}
+
+function shouldShowAxisLabel(index: number, labelCount: number, step: number): boolean {
+  if (labelCount <= MAX_VISIBLE_X_LABELS) {
+    return true;
+  }
+
+  if (index === 0 || index === labelCount - 1) {
+    return true;
+  }
+
+  return index % step === 0;
+}
+
+function compactAxisLabel(label: string): string {
+  if (label.length <= AXIS_LABEL_MAX_CHARS) {
+    return label;
+  }
+
+  return `${label.slice(0, AXIS_LABEL_MAX_CHARS - 1)}…`;
+}
+
 export function BarChart({ values, labels, title }: Props) {
   if (!values.length) {
     return (
@@ -19,20 +50,41 @@ export function BarChart({ values, labels, title }: Props) {
   }
 
   const max = Math.max(...values, 1);
+  const labelCount = Math.max(labels.length, values.length);
+  const step = getAxisLabelStep(labelCount);
+
   return (
     <View style={styles.wrap}>
       <Text size="caption" tone="secondary">
         {title}
       </Text>
       <View style={styles.row}>
-        {values.map((value, idx) => (
-          <View key={labels[idx]} style={styles.barCol}>
-            <View style={[styles.bar, { height: (value / max) * 120 + 6 }]} />
-            <Text size="micro" tone="muted">
-              {labels[idx]}
-            </Text>
-          </View>
-        ))}
+        {values.map((value, idx) => {
+          const rawLabel = labels[idx] ?? `${idx + 1}`;
+          const showLabel = shouldShowAxisLabel(idx, labelCount, step);
+
+          return (
+            <View key={`${rawLabel}-${idx}`} style={styles.barCol}>
+              <View style={[styles.bar, { height: (value / max) * 120 + 6 }]} />
+              <View style={styles.labelSlot}>
+                {showLabel ? (
+                  <Text
+                    size="micro"
+                    tone="muted"
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.75}
+                    style={styles.labelText}
+                  >
+                    {compactAxisLabel(rawLabel)}
+                  </Text>
+                ) : (
+                  <View style={styles.hiddenLabelSpacer} />
+                )}
+              </View>
+            </View>
+          );
+        })}
       </View>
     </View>
   );
@@ -51,6 +103,17 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#171717',
     borderRadius: theme.radius.sm
+  },
+  labelSlot: {
+    width: '100%',
+    minHeight: theme.typography.micro + 2,
+    justifyContent: 'center'
+  },
+  labelText: {
+    textAlign: 'center'
+  },
+  hiddenLabelSpacer: {
+    height: theme.typography.micro + 2
   },
   emptyWrap: {
     minHeight: 80,

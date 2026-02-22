@@ -2,6 +2,7 @@ type AppEnv = 'development' | 'staging' | 'production';
 
 export type RuntimeEnv = {
   appEnv: AppEnv;
+  apiBaseUrl: string;
   supabaseUrl: string;
   supabaseAnonKey: string;
 };
@@ -37,6 +38,7 @@ function getRequiredExpoPublicEnv(key: string): string {
 export function readRuntimeEnv(): RuntimeEnv {
   return {
     appEnv: normalizeAppEnv(appEnvRaw),
+    apiBaseUrl: getRequiredExpoPublicEnv('EXPO_PUBLIC_API_BASE_URL'),
     supabaseUrl: getRequiredExpoPublicEnv('EXPO_PUBLIC_SUPABASE_URL'),
     supabaseAnonKey: getRequiredExpoPublicEnv('EXPO_PUBLIC_SUPABASE_ANON_KEY')
   };
