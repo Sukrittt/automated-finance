@@ -38,10 +38,13 @@
 ## Gaps Identified
 
 - Need signed build artifact metadata to shorten rollback execution time.
-- Need a concrete external telemetry sink to improve trigger confidence speed.
+
+## Follow-up Status (2026-02-24)
+
+- Monitoring signal validation completed with focused suite run (`5/5` suites, `18/18` tests).
+- Runtime telemetry sink is now active for auth/ingest/crash flows; external provider integration is optional post-beta hardening, not a current blocker.
 
 ## Rehearsal Verdict
 
 - `PASS` for process readiness: rollback criteria and action sequence are documented and reproducible.
 - Follow-up required: attach real build/version references once signing is complete.
-

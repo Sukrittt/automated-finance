@@ -11,6 +11,7 @@ import { theme } from '../theme';
 
 interface Props {
   onContinue: (session: AuthSession) => void;
+  onSkip?: () => void;
   authService?: Pick<OtpAuthService, 'requestOtp' | 'verifyOtp'>;
   defaultCooldownSeconds?: number;
 }
@@ -73,6 +74,7 @@ function toUiError(error: unknown): string {
 
 export function OnboardingScreen({
   onContinue,
+  onSkip,
   authService = demoAuthService,
   defaultCooldownSeconds = DEFAULT_COOLDOWN_SECONDS
 }: Props) {
@@ -133,11 +135,6 @@ export function OnboardingScreen({
   }
 
   async function handleVerifyOtp() {
-    if (cooldownSeconds > 0) {
-      setErrorMessage(`Please wait ${cooldownSeconds}s before the next OTP attempt.`);
-      return;
-    }
-
     const normalizedOtpCode = otpCode.trim();
     if (!otpRegex.test(normalizedOtpCode)) {
       setErrorMessage('Enter the 6-digit OTP sent to your phone.');
@@ -255,12 +252,19 @@ export function OnboardingScreen({
       ) : null}
       </Card>
       {step === 'intro' ? (
-        <Button label={requestOtpLabel} onPress={handleRequestOtp} disabled={submitting} />
+        <View style={styles.primaryCtaRow}>
+          <Button label={requestOtpLabel} onPress={handleRequestOtp} disabled={submitting} />
+        </View>
       ) : (
         <View style={styles.primaryCtaRow}>
           <Button label={otpCtaLabel} onPress={handleVerifyOtp} disabled={submitting} />
         </View>
       )}
+      {onSkip ? (
+        <View style={styles.skipRow}>
+          <Button label="Skip To Dashboard (Dev)" variant="outline" onPress={onSkip} />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -282,6 +286,9 @@ const styles = StyleSheet.create({
   },
   primaryCtaRow: {
     marginTop: theme.spacing.xs
+  },
+  skipRow: {
+    marginTop: theme.spacing.sm
   },
   resendRow: {
     marginTop: theme.spacing.md

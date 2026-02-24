@@ -33,6 +33,7 @@ export default function App() {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [tab, setTab] = useState<Tab>('home');
+  const allowDevSkip = __DEV__;
 
   useEffect(() => {
     installCrashTelemetry(telemetryReporter);
@@ -98,6 +99,20 @@ export default function App() {
     }
   };
 
+  const handleDevSkip = () => {
+    const now = Date.now();
+    setSession({
+      accessToken: `dev-skip-access-${now}`,
+      refreshToken: `dev-skip-refresh-${now}`,
+      expiresAtISO: new Date(now + 60 * 60 * 1000).toISOString(),
+      user: {
+        id: 'dev-skip-user',
+        phoneE164: '+919876543210'
+      }
+    });
+    setTab('home');
+  };
+
   const screen = useMemo(() => {
     if (!authReady) {
       return (
@@ -108,7 +123,13 @@ export default function App() {
     }
 
     if (!session) {
-      return <OnboardingScreen authService={authService} onContinue={(nextSession) => setSession(nextSession)} />;
+      return (
+        <OnboardingScreen
+          authService={authService}
+          onContinue={(nextSession) => setSession(nextSession)}
+          onSkip={allowDevSkip ? handleDevSkip : undefined}
+        />
+      );
     }
 
     switch (tab) {
@@ -125,7 +146,7 @@ export default function App() {
       default:
         return <DashboardScreen />;
     }
-  }, [authReady, authService, session, signingOut, tab]);
+  }, [allowDevSkip, authReady, authService, session, signingOut, tab]);
 
   return (
     <SafeAreaView style={styles.safe}>

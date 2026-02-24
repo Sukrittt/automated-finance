@@ -46,5 +46,6 @@
 - Crash telemetry baseline: startup crash handler installation and capture forwarding validated in tests.
 - Runtime telemetry sink baseline: structured event logging and recent-event retention validated.
 - Rollback rehearsal baseline: tabletop dry run completed for all rollback criteria.
+- Monitoring validation checkpoint: focused monitoring and gate suite passed (`5/5` suites, `18/18` tests) on 2026-02-24.
 - Quality gate baseline: evaluator and `GO/NO_GO` threshold behavior validated.
 - Checkpoint decision snapshot: `GO` (`P0=0`, `P1=0`, no threshold failures).

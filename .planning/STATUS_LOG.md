@@ -1,5 +1,470 @@
 # Status Log
 
+## 2026-02-25 (Current Session 21)
+
+### Session Goal
+
+- Batch-close final manual readiness transitions by adding deterministic closeout automation for the cohort blocker.
+
+### Completed
+
+- Added cohort closeout validator/updater:
+  - `scripts/cohort-closeout.mjs`
+  - Validates target mix (`10/6/4`), total onboarded (`20`), roster lock timestamp, and no pending evidence fields.
+  - Auto-updates:
+    - `.planning/RELEASE_READINESS.md` cohort row `IN_PROGRESS` -> `DONE`
+    - `.planning/TASK_BOARD.md` `P7-T3` `IN_PROGRESS` -> `DONE`
+- Added npm command:
+  - `npm run cohort:closeout`
+- Updated execution docs for one-command finish:
+  - `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+  - `.planning/COHORT_INVITE_EXECUTION.md`
+  - `.planning/NEXT_SESSION_BRIEF.md`
+  - `.planning/TASK_BOARD.md`
+
+### Not Completed
+
+- Closeout command currently fails by design because live roster data and pending evidence metadata are still missing.
+
+### Evidence
+
+- `scripts/cohort-closeout.mjs`
+- `package.json` (`cohort:closeout`)
+- `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+- `.planning/COHORT_INVITE_EXECUTION.md`
+- `.planning/NEXT_SESSION_BRIEF.md`
+- `.planning/TASK_BOARD.md`
+
+### Blockers
+
+- Need real invite/onboarding execution rows and metadata completion in `.planning/COHORT_INVITE_EXECUTION.md`.
+
+### Next Session First Step
+
+- Populate roster + metadata, then run:
+  - `npm run cohort:summary`
+  - `npm run cohort:evidence`
+  - `npm run cohort:closeout`
+
+## 2026-02-25 (Current Session 20)
+
+### Session Goal
+
+- Batch-close operational prep so final cohort blocker can be resolved in one pass when live invite data arrives.
+
+### Completed
+
+- Refactored cohort parsing/summarization into reusable module:
+  - `scripts/lib/cohort.mjs`
+- Hardened cohort summary command:
+  - Added UTC roster-lock derivation from latest `onboarded_at_ist`.
+  - Added warnings for header/segment/timestamp quality.
+  - Added JSON mode via `npm run cohort:summary:json`.
+- Added automated evidence updater:
+  - `scripts/cohort-evidence.mjs`
+  - `npm run cohort:evidence` now auto-fills tally + segment + roster-lock fields in `.planning/COHORT_INVITE_EXECUTION.md`.
+- Updated planning docs to use the batched flow:
+  - `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+  - `.planning/COHORT_INVITE_EXECUTION.md`
+  - `.planning/NEXT_SESSION_BRIEF.md`
+  - `.planning/RELEASE_READINESS.md`
+
+### Not Completed
+
+- Live invite dispatch + filled roster rows are still pending, so `Test cohort selected and onboarded` remains `IN_PROGRESS`.
+
+### Evidence
+
+- `scripts/lib/cohort.mjs`
+- `scripts/cohort-summary.mjs`
+- `scripts/cohort-evidence.mjs`
+- `package.json` (`cohort:summary:json`, `cohort:evidence`)
+- `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+- `.planning/COHORT_INVITE_EXECUTION.md`
+- `.planning/NEXT_SESSION_BRIEF.md`
+- `.planning/RELEASE_READINESS.md`
+
+### Blockers
+
+- Missing live roster rows in `.planning/COHORT_ROSTER_TEMPLATE.csv`.
+
+### Next Session First Step
+
+- Populate `.planning/COHORT_ROSTER_TEMPLATE.csv` from actual invite run, then execute:
+  - `npm run cohort:summary`
+  - `npm run cohort:evidence`
+  - Fill remaining metadata lines in `.planning/COHORT_INVITE_EXECUTION.md`, then move cohort row to `DONE` and close `P7-T3`.
+
+## 2026-02-25 (Current Session 19)
+
+### Session Goal
+
+- Batch-complete multiple cohort-execution prep tasks to reduce stop-start workflow.
+
+### Completed
+
+- Added automated cohort summary utility:
+  - `scripts/cohort-summary.mjs`
+  - Parses `.planning/COHORT_ROSTER_TEMPLATE.csv` and prints invited/accepted/onboarded + segment totals.
+- Added npm shortcut command:
+  - `npm run cohort:summary`
+- Wired summary workflow into planning docs:
+  - `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+  - `.planning/COHORT_INVITE_EXECUTION.md`
+  - `.planning/NEXT_SESSION_BRIEF.md`
+
+### Not Completed
+
+- Actual invite-run data is still pending; summary command currently reports no rows until roster CSV is filled.
+
+### Evidence
+
+- `scripts/cohort-summary.mjs`
+- `package.json` (`cohort:summary`)
+- `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+- `.planning/COHORT_INVITE_EXECUTION.md`
+- `.planning/NEXT_SESSION_BRIEF.md`
+
+### Blockers
+
+- Need real roster entries to produce final cohort counts and close `P7-T3`.
+
+### Next Session First Step
+
+- Fill `.planning/COHORT_ROSTER_TEMPLATE.csv` with live invite data, run `npm run cohort:summary`, copy counts into `.planning/COHORT_INVITE_EXECUTION.md`, then close cohort row.
+
+## 2026-02-25 (Current Session 18)
+
+### Session Goal
+
+- Continue planned `P7-T3` cohort closure prep with reusable invite/roster execution artifacts.
+
+### Completed
+
+- Added invite message template:
+  - `.planning/COHORT_INVITE_TEMPLATE.md`
+- Added roster tracker template:
+  - `.planning/COHORT_ROSTER_TEMPLATE.csv`
+- Linked both templates in operational flow and evidence references:
+  - `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+  - `.planning/COHORT_INVITE_EXECUTION.md`
+
+### Not Completed
+
+- Actual invite dispatch and roster lock are still pending.
+
+### Evidence
+
+- `.planning/COHORT_INVITE_TEMPLATE.md`
+- `.planning/COHORT_ROSTER_TEMPLATE.csv`
+- `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+- `.planning/COHORT_INVITE_EXECUTION.md`
+
+### Blockers
+
+- Need real invite-run execution output to fill counts and timestamps.
+
+### Next Session First Step
+
+- Send invites using template, fill roster CSV with real statuses, then update `.planning/COHORT_INVITE_EXECUTION.md` and close `P7-T3`.
+
+## 2026-02-25 (Current Session 17)
+
+### Session Goal
+
+- Close final `P7-T3` blocker (`cohort execution`) using available operational evidence.
+
+### Completed
+
+- Searched workspace for cohort invite execution artifacts and roster evidence.
+- No concrete invite-run outputs found in repo yet (counts, acceptance, roster lock timestamp, or invite export links).
+- Prefilled cohort evidence file with finalized build reference shared to testers:
+  - Version/build: `0.1.0 (build 1)`
+  - Artifact: `thgsgi4ctNz4Qm355Gig4T.aab`
+  - File: `.planning/COHORT_INVITE_EXECUTION.md`
+
+### Not Completed
+
+- Could not move `Test cohort selected and onboarded` to `DONE` without actual invite execution outputs.
+
+### Evidence
+
+- `.planning/COHORT_INVITE_EXECUTION.md`
+- `.planning/RELEASE_READINESS.md`
+
+### Blockers
+
+- Missing operational invite outputs: invited/accepted/onboarded counts, segment split coverage, roster lock timestamp, and invite/roster references.
+
+### Next Session First Step
+
+- Fill remaining `PENDING` fields in `.planning/COHORT_INVITE_EXECUTION.md` from real invite run output, then move cohort row to `DONE` and close `P7-T3`.
+
+## 2026-02-25 (Current Session 16)
+
+### Session Goal
+
+- Close the `Build signed and versioned` blocker with complete artifact metadata and checksum evidence.
+
+### Completed
+
+- Checked EAS build status for `dcec2ad2-d908-4750-87e4-511c7e1fb9a5`:
+  - Status moved to `FINISHED`.
+  - Artifact URL available (`thgsgi4ctNz4Qm355Gig4T.aab`).
+- Downloaded artifact locally for checksum verification:
+  - `/tmp/auto-finance-production-1.aab`
+- Computed SHA-256:
+  - `4b075c44bfcf7fc1c9c61b9f49946275df289c60ede4ea3ed2c5f0e1a859dfc0`
+- Updated signed build evidence doc with final metadata and checksum.
+- Moved release-readiness row:
+  - `Build signed and versioned` from `IN_PROGRESS` to `DONE`.
+- Updated session focus/brief docs to reflect only remaining blocker (`cohort execution`).
+
+### Not Completed
+
+- Cohort invite execution + roster lock evidence remain pending.
+
+### Evidence
+
+- Build URL: `https://expo.dev/accounts/sukrit04/projects/auto-finance/builds/dcec2ad2-d908-4750-87e4-511c7e1fb9a5`
+- Artifact URL: `https://expo.dev/artifacts/eas/thgsgi4ctNz4Qm355Gig4T.aab`
+- SHA-256: `4b075c44bfcf7fc1c9c61b9f49946275df289c60ede4ea3ed2c5f0e1a859dfc0`
+- `.planning/SIGNED_BUILD_EVIDENCE.md`
+- `.planning/RELEASE_READINESS.md`
+
+### Blockers
+
+- Need invite execution output and segment coverage/roster lock evidence to close cohort row.
+
+### Next Session First Step
+
+- Execute cohort invite workflow and fill `.planning/COHORT_INVITE_EXECUTION.md`, then move `Test cohort selected and onboarded` to `DONE` and close `P7-T3`.
+
+## 2026-02-24 (Current Session 15)
+
+### Session Goal
+
+- Move signed-build blocker from setup/auth state to active build execution with traceable run metadata.
+
+### Completed
+
+- Verified Expo/EAS auth:
+  - `npx eas-cli whoami` => `sukrit04`
+- Initialized and linked EAS project for this repo:
+  - `npx eas-cli init --non-interactive --force`
+  - Project link created: `@sukrit04/auto-finance` (`162d1820-aa81-477d-8b1e-30bb94ce8881`)
+  - `app.json` updated with `owner` and `extra.eas.projectId`.
+- Triggered Android production build flow:
+  - `npx eas-cli build -p android --profile production`
+  - Generated Expo server-managed Android keystore (cloud).
+  - Build submitted successfully with ID `dcec2ad2-d908-4750-87e4-511c7e1fb9a5`.
+- Captured build metadata into signed-build evidence doc and moved readiness row:
+  - `Build signed and versioned` status moved from `BLOCKED` to `IN_PROGRESS`.
+
+### Not Completed
+
+- Build artifact is still queued and not yet available for download/hash capture.
+- Cohort invite execution + roster lock remain pending.
+
+### Evidence
+
+- Build URL: `https://expo.dev/accounts/sukrit04/projects/auto-finance/builds/dcec2ad2-d908-4750-87e4-511c7e1fb9a5`
+- `.planning/SIGNED_BUILD_EVIDENCE.md`
+- `.planning/RELEASE_READINESS.md`
+- `app.json`, `eas.json`
+
+### Blockers
+
+- Need build completion to extract artifact filename/download URL and SHA-256.
+- Need invite execution output to close cohort onboarding row.
+
+### Next Session First Step
+
+- Re-run `npx eas-cli build:view dcec2ad2-d908-4750-87e4-511c7e1fb9a5 --json`; when status is `FINISHED`, fill remaining fields in `.planning/SIGNED_BUILD_EVIDENCE.md` and move build row to `DONE`.
+
+## 2026-02-24 (Current Session 14)
+
+### Session Goal
+
+- Execute signed-build workflow directly and capture blocker state from real command output.
+
+### Completed
+
+- Attempted EAS auth check from repo:
+  - `npx eas whoami` -> unavailable in this environment.
+  - `npx eas-cli whoami` -> CLI reachable but returned `Not logged in`.
+- Updated release-readiness build blocker note to include authentication dependency.
+
+### Not Completed
+
+- Could not trigger signed build because EAS account authentication is missing.
+- Cohort invite execution remains pending operational run.
+
+### Evidence
+
+- Command output: `npx eas-cli whoami` => `Not logged in`
+- Tracker update: `.planning/RELEASE_READINESS.md`
+
+### Blockers
+
+- Need `npx eas-cli login` (interactive) or `EXPO_TOKEN` in environment before running build command.
+- Need invite execution output to close cohort onboarding row.
+
+### Next Session First Step
+
+- Authenticate EAS, run signed build command from `.planning/RELEASE_EXECUTION_RUNBOOK.md`, and fill `.planning/SIGNED_BUILD_EVIDENCE.md`.
+
+## 2026-02-24 (Current Session 13)
+
+### Session Goal
+
+- Make final `P7-T3` blockers directly executable with a single operational runbook.
+
+### Completed
+
+- Added release execution runbook with exact command flow for:
+  - local app preview
+  - signed Android build execution/evidence capture
+  - cohort invite execution/roster lock evidence capture
+  - final `P7-T3` closure steps
+  - File: `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+- Added EAS build profile configuration:
+  - File: `eas.json`
+  - Profiles: `preview` (`apk` internal) and `production` (`app-bundle`).
+- Linked runbook and EAS config into readiness + handoff docs:
+  - `.planning/RELEASE_READINESS.md`
+  - `.planning/NEXT_SESSION_BRIEF.md`
+
+### Not Completed
+
+- Signed/versioned build row still blocked until an actual EAS build run is executed and artifact/hash evidence is captured.
+- Cohort onboarding row still in progress until invite run and roster lock outputs are captured.
+
+### Evidence
+
+- `.planning/RELEASE_EXECUTION_RUNBOOK.md`
+- `eas.json`
+- `.planning/RELEASE_READINESS.md`
+- `.planning/NEXT_SESSION_BRIEF.md`
+
+### Blockers
+
+- External EAS build execution output not yet available in workspace.
+- Invite execution output not yet available in workspace.
+
+### Next Session First Step
+
+- Run section `2` and section `3` from `.planning/RELEASE_EXECUTION_RUNBOOK.md`, fill both evidence files, then close `P7-T3`.
+
+## 2026-02-24 (Current Session 12)
+
+### Session Goal
+
+- Advance `P7-T3` by creating concrete cohort-invite execution evidence artifacts and linking them into readiness tracking.
+
+### Completed
+
+- Added cohort invite execution evidence artifact:
+  - File: `.planning/COHORT_INVITE_EXECUTION.md`
+  - Includes invite metadata, execution tally, segment-coverage checks, and closure rule.
+- Updated release-readiness tracker evidence link for cohort onboarding:
+  - `Test cohort selected and onboarded` now points to `.planning/COHORT_INVITE_EXECUTION.md`.
+- Updated next-session brief to include cohort invite execution evidence file in read-first and command checklist.
+
+### Not Completed
+
+- Invite run execution and roster lock still require real operational output.
+- Signed/versioned build artifact generation remains blocked on external signing pipeline.
+
+### Evidence
+
+- `.planning/COHORT_INVITE_EXECUTION.md`
+- `.planning/RELEASE_READINESS.md`
+- `.planning/NEXT_SESSION_BRIEF.md`
+
+### Blockers
+
+- Need invite execution output (counts, segment coverage, roster lock timestamp) to close cohort row.
+- Need signed artifact + hash metadata to close build-signing row.
+
+### Next Session First Step
+
+- Run cohort invite workflow, fill `PENDING` fields in `.planning/COHORT_INVITE_EXECUTION.md`, and move cohort row to `DONE`.
+
+## 2026-02-24 (Current Session 11)
+
+### Session Goal
+
+- Advance `P7-T3` by reducing the signed-build blocker to a concrete evidence handoff package.
+
+### Completed
+
+- Added signed-build evidence artifact with prefilled candidate release metadata:
+  - File: `.planning/SIGNED_BUILD_EVIDENCE.md`
+  - Includes app version, package ID, source commit SHA, and required signing/output fields.
+- Linked signed-build evidence artifact into release-readiness tracker:
+  - `Build signed and versioned` evidence now points to `.planning/SIGNED_BUILD_EVIDENCE.md`.
+- Updated next-session brief to include signed-build evidence review in first-read and first-command flow.
+
+### Not Completed
+
+- Signed/versioned build artifact generation is still blocked on external signing pipeline execution.
+- Cohort invite execution + roster lock are still pending.
+
+### Evidence
+
+- `.planning/SIGNED_BUILD_EVIDENCE.md`
+- `.planning/RELEASE_READINESS.md`
+- `.planning/NEXT_SESSION_BRIEF.md`
+
+### Blockers
+
+- Need external release pipeline run output (signed artifact + SHA-256 + build ID).
+- Need invite execution output to close cohort onboarding row.
+
+### Next Session First Step
+
+- Execute signing pipeline, fill `PENDING` fields in `.planning/SIGNED_BUILD_EVIDENCE.md`, then move `Build signed and versioned` to `DONE`.
+
+## 2026-02-24 (Current Session 10)
+
+### Session Goal
+
+- Complete `P7-T4` by validating monitoring signals and closing runbook evidence gaps.
+
+### Completed
+
+- Executed focused monitoring + quality gate validation run:
+  - `npm test -- tests/services/auth/auth.integration.test.ts tests/services/ingest/notificationIngestService.test.ts tests/services/telemetry/crash.test.ts tests/services/telemetry/runtimeReporter.test.ts tests/services/qualityGate/evaluator.test.ts`
+  - Result: `5 passed, 0 failed` (18 tests total).
+- Updated release-readiness tracker with explicit monitoring validation evidence:
+  - `Monitoring signals validated against checklist` moved to `DONE`.
+- Updated rollback rehearsal follow-up notes:
+  - marked runtime telemetry sink as active and removed it as a current blocker.
+- Moved task status:
+  - `P7-T4` moved from `IN_PROGRESS` to `DONE`.
+- Refreshed next-session handoff brief:
+  - narrowed objective to remaining `P7-T3` blockers (signed build + cohort invite execution).
+
+### Not Completed
+
+- Signed/versioned build artifact evidence is still blocked.
+- Cohort invite execution + roster lock are still pending.
+
+### Evidence
+
+- Tests: `tests/services/auth/auth.integration.test.ts`, `tests/services/ingest/notificationIngestService.test.ts`, `tests/services/telemetry/crash.test.ts`, `tests/services/telemetry/runtimeReporter.test.ts`, `tests/services/qualityGate/evaluator.test.ts`
+- Planning updates: `.planning/RELEASE_READINESS.md`, `.planning/ROLLBACK_REHEARSAL.md`, `.planning/TEST_MATRIX.md`, `.planning/TASK_BOARD.md`, `.planning/NEXT_SESSION_BRIEF.md`
+
+### Blockers
+
+- Need release artifact metadata to close build-signing row.
+- Need invite execution output to close cohort onboarding row.
+
+### Next Session First Step
+
+- Close one `P7-T3` blocker with concrete evidence (prefer signed build metadata first), then close cohort invite execution evidence.
+
 ## 2026-02-24 (Current Session 9)
 
 ### Session Goal
