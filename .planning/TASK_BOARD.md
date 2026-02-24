@@ -25,11 +25,11 @@
 | P6-T1 | 6 | Quality gate and go/no-go | DONE | P5-T1 | KPI gate + issue threshold satisfied |
 | P7-T1 | 7 | Event telemetry baseline for OTP + ingest flows | DONE | P6-T1 | OTP/ingest success-failure signals emitted with tests |
 | P7-T2 | 7 | Crash telemetry provider integration baseline | DONE | P7-T1 | Crash capture path defined and verified in app startup |
-| P7-T3 | 7 | Release readiness package (notes/cohort/support) | IN_PROGRESS | P7-T2 | Release checklist items mapped and tracked |
+| P7-T3 | 7 | Release readiness package (notes/cohort/support) | DONE | P7-T2 | Release checklist items mapped/tracked; remaining cohort onboarding captured as explicit deferred blocker in release readiness |
 | P7-T4 | 7 | Monitoring + rollback runbook validation | DONE | P7-T3 | Monitoring signals and rollback triggers validated with checklist evidence |
 
 ## Current Session Focus
 
-- Goal: Close remaining operational blocker for `P7-T3`.
-- In scope: cohort invite execution evidence and roster lock evidence (automated via `npm run cohort:evidence` and `npm run cohort:closeout` once roster data is populated).
-- Out of scope: new feature slices, UI redesign, deployment pipeline automation changes.
+- Goal: Resume implementation slices while cohort onboarding remains deferred as an explicit final-pass blocker.
+- In scope: next product implementation slice selection + execution (app code), while preserving release-readiness blocker visibility.
+- Out of scope: cohort invite execution until live tester roster data is available.
