@@ -18,21 +18,20 @@
 - `P7-T2` DONE: crash telemetry handler is installed at app startup and test-validated.
 - `P7-T3` DONE (tracking complete): release notes/support/telemetry sink and signed build evidence are closed; cohort onboarding is explicitly deferred as a release-readiness blocker.
 - `P7-T4` DONE: rollback rehearsal plus monitoring signal validation evidence is complete (`.planning/ROLLBACK_REHEARSAL.md`, `.planning/TEST_MATRIX.md`).
+- `BUD-01` DONE: monthly budget setup/edit UI with local persistence is implemented and dashboard budget alerts now respect saved limits.
+- Playful UX baseline DONE: button spring/tap feedback + success/warning haptics + friendly action confirmations are live on key flows.
 
 ## Next Session Bundle (Single Outcome)
 
-- Bundle name: `BUD-01 + Playful UX baseline`
+- Bundle name: `Summary + Category surface completion`
 - Why this bundle:
-  - Budget alerts are now live (`BUD-02/BUD-03`), but user budget setup (`BUD-01`) is missing.
-  - Product direction now prioritizes a playful, game-like feel (Duolingo-inspired), so motion/haptic feedback should begin in the same pass.
+  - Budgeting slice is now fully closed (`BUD-01/02/03`), so the next highest-impact gap is core requirement surface coverage for summaries/categories.
+  - This bundle can close multiple pending Phase-1 requirements in one pass with user-visible UI + tests.
 - Deliverables in one session:
-  - Build `BUD-01` budget setup/edit UI (category monthly limits).
-  - Persist limits locally and wire into current alert evaluator inputs.
-  - Add playful interaction layer on primary actions (save budget, category correction, milestone states):
-    - short success haptic
-    - subtle spring/scale feedback
-    - friendly status copy tone
-  - Add tests for budget setup behavior and alert recomputation.
+  - Close summary requirement surface (`SUM-01..04`) in app UI parity terms.
+  - Close category requirement surface (`CAT-02`, `CAT-03`) with clear amount + percentage breakdown UX.
+  - Ensure transactions and dashboard states use consistent category labels/totals and no conflicting semantics.
+  - Add focused tests to lock summary/category display behavior.
 
 ## Read First
 

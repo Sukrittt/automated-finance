@@ -1,3 +1,4 @@
+export { BudgetsScreen } from './BudgetsScreen';
 export { DashboardScreen } from './DashboardScreen';
 export { InsightsScreen } from './InsightsScreen';
 export { OnboardingScreen } from './OnboardingScreen';

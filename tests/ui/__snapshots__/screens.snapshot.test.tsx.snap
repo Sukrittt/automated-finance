@@ -1,5 +1,717 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Core screen snapshots matches budgets screen 1`] = `
+<View
+  style={
+    {
+      "gap": 12,
+      "paddingBottom": 24,
+    }
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "letterSpacing": 0.1,
+        },
+        {
+          "color": "#111111",
+          "fontSize": 22,
+          "fontWeight": "700",
+        },
+        undefined,
+      ]
+    }
+  >
+    Monthly Budgets
+  </Text>
+  <Text
+    style={
+      [
+        {
+          "letterSpacing": 0.1,
+        },
+        {
+          "color": "#5B5B5B",
+          "fontSize": 15,
+          "fontWeight": "500",
+        },
+        undefined,
+      ]
+    }
+  >
+    Set category limits so warnings and over-budget alerts stay personal to your goals.
+  </Text>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E9E9E9",
+          "borderRadius": 18,
+          "borderWidth": 1,
+          "elevation": 2,
+          "padding": 16,
+          "shadowColor": "#000000",
+          "shadowOffset": {
+            "height": 4,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 10,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#111111",
+            "fontSize": 15,
+            "fontWeight": "700",
+          },
+          undefined,
+        ]
+      }
+    >
+      Food
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#5B5B5B",
+            "fontSize": 13,
+            "fontWeight": "500",
+          },
+          undefined,
+        ]
+      }
+    >
+      Current limit: 
+      Rs 8,000
+    </Text>
+    <TextInput
+      accessibilityLabel="Food monthly limit"
+      keyboardType="number-pad"
+      onChangeText={[Function]}
+      placeholder="Monthly limit"
+      placeholderTextColor="#888888"
+      style={
+        [
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E9E9E9",
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "color": "#111111",
+            "fontSize": 15,
+            "height": 48,
+            "paddingHorizontal": 16,
+          },
+          {
+            "marginTop": 8,
+          },
+        ]
+      }
+      value="8000"
+    />
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E9E9E9",
+          "borderRadius": 18,
+          "borderWidth": 1,
+          "elevation": 2,
+          "padding": 16,
+          "shadowColor": "#000000",
+          "shadowOffset": {
+            "height": 4,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 10,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#111111",
+            "fontSize": 15,
+            "fontWeight": "700",
+          },
+          undefined,
+        ]
+      }
+    >
+      Transport
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#5B5B5B",
+            "fontSize": 13,
+            "fontWeight": "500",
+          },
+          undefined,
+        ]
+      }
+    >
+      Current limit: 
+      Rs 5,000
+    </Text>
+    <TextInput
+      accessibilityLabel="Transport monthly limit"
+      keyboardType="number-pad"
+      onChangeText={[Function]}
+      placeholder="Monthly limit"
+      placeholderTextColor="#888888"
+      style={
+        [
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E9E9E9",
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "color": "#111111",
+            "fontSize": 15,
+            "height": 48,
+            "paddingHorizontal": 16,
+          },
+          {
+            "marginTop": 8,
+          },
+        ]
+      }
+      value="5000"
+    />
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E9E9E9",
+          "borderRadius": 18,
+          "borderWidth": 1,
+          "elevation": 2,
+          "padding": 16,
+          "shadowColor": "#000000",
+          "shadowOffset": {
+            "height": 4,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 10,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#111111",
+            "fontSize": 15,
+            "fontWeight": "700",
+          },
+          undefined,
+        ]
+      }
+    >
+      Shopping
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#5B5B5B",
+            "fontSize": 13,
+            "fontWeight": "500",
+          },
+          undefined,
+        ]
+      }
+    >
+      Current limit: 
+      Rs 7,000
+    </Text>
+    <TextInput
+      accessibilityLabel="Shopping monthly limit"
+      keyboardType="number-pad"
+      onChangeText={[Function]}
+      placeholder="Monthly limit"
+      placeholderTextColor="#888888"
+      style={
+        [
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E9E9E9",
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "color": "#111111",
+            "fontSize": 15,
+            "height": 48,
+            "paddingHorizontal": 16,
+          },
+          {
+            "marginTop": 8,
+          },
+        ]
+      }
+      value="7000"
+    />
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E9E9E9",
+          "borderRadius": 18,
+          "borderWidth": 1,
+          "elevation": 2,
+          "padding": 16,
+          "shadowColor": "#000000",
+          "shadowOffset": {
+            "height": 4,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 10,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#111111",
+            "fontSize": 15,
+            "fontWeight": "700",
+          },
+          undefined,
+        ]
+      }
+    >
+      Bills
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#5B5B5B",
+            "fontSize": 13,
+            "fontWeight": "500",
+          },
+          undefined,
+        ]
+      }
+    >
+      Current limit: 
+      Rs 6,000
+    </Text>
+    <TextInput
+      accessibilityLabel="Bills monthly limit"
+      keyboardType="number-pad"
+      onChangeText={[Function]}
+      placeholder="Monthly limit"
+      placeholderTextColor="#888888"
+      style={
+        [
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E9E9E9",
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "color": "#111111",
+            "fontSize": 15,
+            "height": 48,
+            "paddingHorizontal": 16,
+          },
+          {
+            "marginTop": 8,
+          },
+        ]
+      }
+      value="6000"
+    />
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E9E9E9",
+          "borderRadius": 18,
+          "borderWidth": 1,
+          "elevation": 2,
+          "padding": 16,
+          "shadowColor": "#000000",
+          "shadowOffset": {
+            "height": 4,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 10,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#111111",
+            "fontSize": 15,
+            "fontWeight": "700",
+          },
+          undefined,
+        ]
+      }
+    >
+      Entertainment
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#5B5B5B",
+            "fontSize": 13,
+            "fontWeight": "500",
+          },
+          undefined,
+        ]
+      }
+    >
+      Current limit: 
+      Rs 4,000
+    </Text>
+    <TextInput
+      accessibilityLabel="Entertainment monthly limit"
+      keyboardType="number-pad"
+      onChangeText={[Function]}
+      placeholder="Monthly limit"
+      placeholderTextColor="#888888"
+      style={
+        [
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E9E9E9",
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "color": "#111111",
+            "fontSize": 15,
+            "height": 48,
+            "paddingHorizontal": 16,
+          },
+          {
+            "marginTop": 8,
+          },
+        ]
+      }
+      value="4000"
+    />
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#E9E9E9",
+          "borderRadius": 18,
+          "borderWidth": 1,
+          "elevation": 2,
+          "padding": 16,
+          "shadowColor": "#000000",
+          "shadowOffset": {
+            "height": 4,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 10,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#111111",
+            "fontSize": 15,
+            "fontWeight": "700",
+          },
+          undefined,
+        ]
+      }
+    >
+      Others
+    </Text>
+    <Text
+      style={
+        [
+          {
+            "letterSpacing": 0.1,
+          },
+          {
+            "color": "#5B5B5B",
+            "fontSize": 13,
+            "fontWeight": "500",
+          },
+          undefined,
+        ]
+      }
+    >
+      Current limit: 
+      Rs 3,000
+    </Text>
+    <TextInput
+      accessibilityLabel="Others monthly limit"
+      keyboardType="number-pad"
+      onChangeText={[Function]}
+      placeholder="Monthly limit"
+      placeholderTextColor="#888888"
+      style={
+        [
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E9E9E9",
+            "borderRadius": 14,
+            "borderWidth": 1,
+            "color": "#111111",
+            "fontSize": 15,
+            "height": 48,
+            "paddingHorizontal": 16,
+          },
+          {
+            "marginTop": 8,
+          },
+        ]
+      }
+      value="3000"
+    />
+  </View>
+  <View
+    style={
+      {
+        "gap": 8,
+      }
+    }
+  >
+    <View
+      collapsable={false}
+      style={
+        {
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        }
+      }
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 999,
+              "height": 46,
+              "justifyContent": "center",
+              "paddingHorizontal": 20,
+            },
+            {
+              "backgroundColor": "#F0F0F0",
+              "borderColor": "#E9E9E9",
+              "borderWidth": 1,
+            },
+            false,
+            false,
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "letterSpacing": 0.1,
+              },
+              {
+                "color": "#111111",
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+              undefined,
+            ]
+          }
+        >
+          Save Budgets
+        </Text>
+      </View>
+    </View>
+    <View
+      collapsable={false}
+      style={
+        {
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        }
+      }
+    >
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 999,
+              "height": 46,
+              "justifyContent": "center",
+              "paddingHorizontal": 20,
+            },
+            {
+              "backgroundColor": "#FFFFFF",
+              "borderColor": "#E9E9E9",
+              "borderWidth": 1,
+            },
+            false,
+            false,
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "letterSpacing": 0.1,
+              },
+              {
+                "color": "#5B5B5B",
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+              undefined,
+            ]
+          }
+        >
+          Reset Defaults
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
 exports[`Core screen snapshots matches dashboard screen 1`] = `
 <View
   style={
@@ -493,72 +1205,84 @@ exports[`Core screen snapshots matches onboarding screen 1`] = `
     }
   >
     <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": false,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
       collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
       style={
-        [
-          {
-            "alignItems": "center",
-            "borderRadius": 999,
-            "height": 46,
-            "justifyContent": "center",
-            "paddingHorizontal": 20,
-          },
-          {
-            "backgroundColor": "#F0F0F0",
-            "borderColor": "#E9E9E9",
-            "borderWidth": 1,
-          },
-          false,
-          false,
-          undefined,
-        ]
+        {
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        }
       }
     >
-      <Text
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
           [
             {
-              "letterSpacing": 0.1,
+              "alignItems": "center",
+              "borderRadius": 999,
+              "height": 46,
+              "justifyContent": "center",
+              "paddingHorizontal": 20,
             },
             {
-              "color": "#111111",
-              "fontSize": 15,
-              "fontWeight": "600",
+              "backgroundColor": "#F0F0F0",
+              "borderColor": "#E9E9E9",
+              "borderWidth": 1,
             },
-            undefined,
+            false,
+            false,
           ]
         }
       >
-        Send OTP
-      </Text>
+        <Text
+          style={
+            [
+              {
+                "letterSpacing": 0.1,
+              },
+              {
+                "color": "#111111",
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+              undefined,
+            ]
+          }
+        >
+          Send OTP
+        </Text>
+      </View>
     </View>
   </View>
 </View>
@@ -839,206 +1563,242 @@ exports[`Core screen snapshots matches settings screen 1`] = `
     }
   >
     <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": false,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
       collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
       style={
-        [
-          {
-            "alignItems": "center",
-            "borderRadius": 999,
-            "height": 46,
-            "justifyContent": "center",
-            "paddingHorizontal": 20,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-            "borderColor": "#E9E9E9",
-            "borderWidth": 1,
-          },
-          false,
-          false,
-          undefined,
-        ]
+        {
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        }
       }
     >
-      <Text
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
           [
             {
-              "letterSpacing": 0.1,
+              "alignItems": "center",
+              "borderRadius": 999,
+              "height": 46,
+              "justifyContent": "center",
+              "paddingHorizontal": 20,
             },
             {
-              "color": "#5B5B5B",
-              "fontSize": 15,
-              "fontWeight": "600",
+              "backgroundColor": "#FFFFFF",
+              "borderColor": "#E9E9E9",
+              "borderWidth": 1,
             },
-            undefined,
+            false,
+            false,
           ]
         }
       >
-        Export Data
-      </Text>
+        <Text
+          style={
+            [
+              {
+                "letterSpacing": 0.1,
+              },
+              {
+                "color": "#5B5B5B",
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+              undefined,
+            ]
+          }
+        >
+          Export Data
+        </Text>
+      </View>
     </View>
     <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": false,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
       collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
       style={
-        [
-          {
-            "alignItems": "center",
-            "borderRadius": 999,
-            "height": 46,
-            "justifyContent": "center",
-            "paddingHorizontal": 20,
-          },
-          {
-            "backgroundColor": "transparent",
-          },
-          false,
-          false,
-          undefined,
-        ]
+        {
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        }
       }
     >
-      <Text
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
           [
             {
-              "letterSpacing": 0.1,
+              "alignItems": "center",
+              "borderRadius": 999,
+              "height": 46,
+              "justifyContent": "center",
+              "paddingHorizontal": 20,
             },
             {
-              "color": "#5B5B5B",
-              "fontSize": 15,
-              "fontWeight": "600",
+              "backgroundColor": "transparent",
             },
-            undefined,
+            false,
+            false,
           ]
         }
       >
-        Delete Account
-      </Text>
+        <Text
+          style={
+            [
+              {
+                "letterSpacing": 0.1,
+              },
+              {
+                "color": "#5B5B5B",
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+              undefined,
+            ]
+          }
+        >
+          Delete Account
+        </Text>
+      </View>
     </View>
     <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": false,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
       collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
       style={
-        [
-          {
-            "alignItems": "center",
-            "borderRadius": 999,
-            "height": 46,
-            "justifyContent": "center",
-            "paddingHorizontal": 20,
-          },
-          {
-            "backgroundColor": "#FFFFFF",
-            "borderColor": "#E9E9E9",
-            "borderWidth": 1,
-          },
-          false,
-          false,
-          undefined,
-        ]
+        {
+          "transform": [
+            {
+              "scale": 1,
+            },
+          ],
+        }
       }
     >
-      <Text
+      <View
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
         style={
           [
             {
-              "letterSpacing": 0.1,
+              "alignItems": "center",
+              "borderRadius": 999,
+              "height": 46,
+              "justifyContent": "center",
+              "paddingHorizontal": 20,
             },
             {
-              "color": "#5B5B5B",
-              "fontSize": 15,
-              "fontWeight": "600",
+              "backgroundColor": "#FFFFFF",
+              "borderColor": "#E9E9E9",
+              "borderWidth": 1,
             },
-            undefined,
+            false,
+            false,
           ]
         }
       >
-        Sign Out
-      </Text>
+        <Text
+          style={
+            [
+              {
+                "letterSpacing": 0.1,
+              },
+              {
+                "color": "#5B5B5B",
+                "fontSize": 15,
+                "fontWeight": "600",
+              },
+              undefined,
+            ]
+          }
+        >
+          Sign Out
+        </Text>
+      </View>
     </View>
   </View>
 </View>

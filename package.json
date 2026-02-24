@@ -17,6 +17,7 @@
     "cohort:closeout": "node scripts/cohort-closeout.mjs"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^3.0.1",
     "expo": "~53.0.0",
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",

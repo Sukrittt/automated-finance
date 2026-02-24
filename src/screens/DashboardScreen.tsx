@@ -6,6 +6,7 @@ import { BarChart } from '../charts/BarChart';
 import { DonutLegend } from '../charts/DonutLegend';
 import { LineChart } from '../charts/LineChart';
 import { DEFAULT_CATEGORY_BUDGETS, evaluateBudgetAlerts } from '../services/budget/thresholds';
+import { loadBudgetConfigs } from '../services/budget/storage';
 import { DashboardSummaryContract, fetchDashboardSummary } from '../services/dashboard/api';
 import { TimeRange } from '../types/view-models';
 
@@ -20,6 +21,7 @@ const EMPTY_STATE = {
   subtitle: 'Enable notifications and capture permissions to start seeing spend trends.',
   actionLabel: 'Check Settings'
 };
+const DEFAULT_BUDGETS = DEFAULT_CATEGORY_BUDGETS;
 
 function formatMoney(value: number): string {
   return `Rs ${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -56,6 +58,22 @@ export function DashboardScreen() {
   const [state, setState] = useState<DashboardSummaryContract | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [budgetConfigs, setBudgetConfigs] = useState(DEFAULT_BUDGETS);
+
+  useEffect(() => {
+    let mounted = true;
+    const hydrateBudgets = async () => {
+      const next = await loadBudgetConfigs();
+      if (mounted) {
+        setBudgetConfigs(next);
+      }
+    };
+
+    void hydrateBudgets();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const loadSummary = useCallback(async () => {
     setLoading(true);
@@ -103,10 +121,12 @@ export function DashboardScreen() {
           category: item.category,
           spent: item.amount
         })) ?? [],
-        DEFAULT_CATEGORY_BUDGETS
+        budgetConfigs
       ),
-    [state]
+    [budgetConfigs, state]
   );
+
+  const hasExceededBudget = budgetAlerts.some((item) => item.level === 'exceeded');
 
   return (
     <View style={styles.container}>
@@ -171,7 +191,9 @@ export function DashboardScreen() {
             <Card>
               <Text weight="700">Budget alerts</Text>
               <Text size="caption" tone="secondary">
-                Tracking category spend vs monthly limits
+                {hasExceededBudget
+                  ? 'Heads up! A few categories crossed their monthly limits.'
+                  : 'Nice pace. You are getting close to a few limits this month.'}
               </Text>
               <View style={styles.budgetRows}>
                 {budgetAlerts.map((alert) => (

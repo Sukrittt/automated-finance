@@ -35,7 +35,7 @@
 
 ### Budgeting
 
-- [ ] **BUD-01**: User can set monthly budget limits per category
+- [x] **BUD-01**: User can set monthly budget limits per category
 - [x] **BUD-02**: User receives warning when approaching budget limit (80%)
 - [x] **BUD-03**: User receives alert when budget is exceeded
 
@@ -77,7 +77,7 @@
 | VIS-01 | Phase 1 | Done |
 | VIS-02 | Phase 1 | Done |
 | VIS-03 | Phase 1 | Done |
-| BUD-01 | Phase 1 | Pending |
+| BUD-01 | Phase 1 | Done |
 | BUD-02 | Phase 1 | Done |
 | BUD-03 | Phase 1 | Done |
 
@@ -88,4 +88,4 @@
 
 ---
 *Requirements defined: 2026-02-24*
-*Last updated: 2026-02-25 after visualization + budget-alert slice implementation*
+*Last updated: 2026-02-25 after budget setup + playful UX baseline implementation*

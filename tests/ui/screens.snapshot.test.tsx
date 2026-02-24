@@ -1,5 +1,6 @@
 import React from 'react';
 import renderer, { act, type ReactTestRenderer } from 'react-test-renderer';
+import { BudgetsScreen } from '../../src/screens/BudgetsScreen';
 import { DashboardScreen } from '../../src/screens/DashboardScreen';
 import { InsightsScreen } from '../../src/screens/InsightsScreen';
 import { OnboardingScreen } from '../../src/screens/OnboardingScreen';
@@ -42,6 +43,20 @@ jest.mock('../../src/services/transactions/api', () => {
 });
 
 describe('Core screen snapshots', () => {
+  it('matches budgets screen', async () => {
+    let tree: ReactTestRenderer;
+
+    await act(async () => {
+      tree = renderer.create(<BudgetsScreen />);
+      await Promise.resolve();
+    });
+
+    expect(tree!.toJSON()).toMatchSnapshot();
+    await act(async () => {
+      tree!.unmount();
+    });
+  });
+
   it('matches onboarding screen', async () => {
     let tree: ReactTestRenderer;
 
