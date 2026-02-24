@@ -42,3 +42,14 @@
 - Reason: Faster iteration with low context loss.
 - Impact: Strict planning doc updates every session.
 
+## ADR-008: Parser Quality Gate
+- Date: 2026-02-24
+- Decision: Use a fixed parser corpus (top 4 apps with success + edge samples) as the extraction quality gate for Phase 1.
+- Reason: Prevent parser regressions and make KPI progress measurable per session.
+- Impact: Corpus test must stay green and amount extraction KPI must remain >=95%.
+
+## ADR-009: Confidence-to-Review Routing
+- Date: 2026-02-24
+- Decision: Mark events with `review_required` when parse confidence is below `0.90`.
+- Reason: Route ambiguous parser outputs into review queue while allowing high-confidence events to flow directly.
+- Impact: Ingest payload now includes parsed fields, confidence, and review routing signal.

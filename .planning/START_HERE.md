@@ -41,10 +41,16 @@ Run required checks and map results to acceptance criteria.
 Update docs and produce next-session starter brief.
 ```
 
+## Step 6: Ship session changes
+
+```md
+Use the yeet skill to stage, commit, push, and open PR; then merge to main after checks/review pass.
+```
+
 ## Session Management Rules
 
 - One feature slice per session.
 - Never skip doc updates.
 - Never close session without a next first step.
 - Log all new decisions in `DECISIONS.md`.
-
+- After every session, use `yeet` and complete merge to `main`.

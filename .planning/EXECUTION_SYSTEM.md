@@ -58,6 +58,7 @@ Required closeout sections:
 - Docs updated
 - Open risks
 - Next session first step
+- PR + merge status (`yeet` flow)
 
 ## Allowed Prompt Set Per Session
 
@@ -73,6 +74,9 @@ Required closeout sections:
 4. Closeout
 - `Update docs and produce next-session starter brief.`
 
+5. Ship
+- `Use the yeet skill to stage, commit, push, and open PR; then merge to main after checks/review pass.`
+
 ## Documentation Rules (Non-Negotiable)
 
 - `TASK_BOARD.md`: status + dependencies
@@ -85,6 +89,8 @@ Required closeout sections:
 
 - Branch naming: `codex/<feature-slice>`
 - Keep commits small and mapped to task IDs.
+- After every session closeout, run the `yeet` skill for commit/push/PR creation.
+- Do not leave session work unshipped: merge the session PR to `main` once checks/review are green.
 - PR must include:
   - implemented tasks
   - test evidence
@@ -110,4 +116,3 @@ Required closeout sections:
 - Canonical docs stay in this planning repo.
 - Implementation occurs in separate app repo path.
 - One milestone slice per session for speed and quality.
-

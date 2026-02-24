@@ -4,11 +4,12 @@
 
 | Area | Scenario | Requirement Link | Status | Evidence |
 |---|---|---|---|---|
-| Parser | Extract amount/date/payee from GPay notification | SUM-01, CAT-01 | Not Run | Pending implementation |
-| Parser | Extract amount/date/payee from PhonePe notification | SUM-01, CAT-01 | Not Run | Pending implementation |
-| Parser | Extract amount/date/payee from Paytm notification | SUM-01, CAT-01 | Not Run | Pending implementation |
-| Parser | Extract amount/date/payee from BHIM notification | SUM-01, CAT-01 | Not Run | Pending implementation |
-| Parser | Deduplication replay test | SUM-01 | Not Run | Pending implementation |
+| Parser | Extract amount/date/payee from GPay notification | SUM-01, CAT-01 | Pass | `tests/services/parsing/upiParser.corpus.test.ts` |
+| Parser | Extract amount/date/payee from PhonePe notification | SUM-01, CAT-01 | Pass | `tests/services/parsing/upiParser.corpus.test.ts` |
+| Parser | Extract amount/date/payee from Paytm notification | SUM-01, CAT-01 | Pass | `tests/services/parsing/upiParser.corpus.test.ts` |
+| Parser | Extract amount/date/payee from BHIM notification | SUM-01, CAT-01 | Pass | `tests/services/parsing/upiParser.corpus.test.ts` |
+| Parser | Deduplication replay test | SUM-01 | Pass | `tests/services/ingest/notificationIngestService.test.ts` |
+| Ingest | Low-confidence event is marked for review queue | SUM-01, CAT-01 | Pass | `tests/services/ingest/payloadMapper.test.ts` |
 | Categorization | Rule-based category mapping accuracy | CAT-01, CAT-03 | Not Run | Pending implementation |
 | Categorization | Single-tap manual recategorization | CAT-04, CAT-05 | Not Run | Pending implementation |
 | Summaries | Daily summary totals and count | SUM-01 | Not Run | Pending implementation |
@@ -28,3 +29,6 @@
 - Parser extraction: `>=95%`
 - Category precision: `>=90%`
 
+## Latest KPI Snapshot (2026-02-24)
+
+- Parser extraction KPI: `100%` (`12/12` parseable corpus samples amount-matched).
