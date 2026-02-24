@@ -53,6 +53,16 @@ function formatBudgetLimit(value: number): string {
   return `Rs ${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
+function formatRangeTitle(timeRange: TimeRange): string {
+  if (timeRange === 'day') {
+    return 'Day summary';
+  }
+  if (timeRange === 'week') {
+    return 'Week summary';
+  }
+  return 'Month summary';
+}
+
 export function DashboardScreen() {
   const [timeRange, setTimeRange] = useState<TimeRange>('week');
   const [state, setState] = useState<DashboardSummaryContract | null>(null);
@@ -110,7 +120,8 @@ export function DashboardScreen() {
     () =>
       state?.categorySplit.map((item) => ({
         label: item.category,
-        value: Math.round(item.sharePct)
+        value: Math.round(item.sharePct),
+        amount: item.amount
       })) ?? [],
     [state]
   );
@@ -164,6 +175,9 @@ export function DashboardScreen() {
       {!loading && !loadError && hasData && summary ? (
         <>
           <Card>
+            <Text size="caption" tone="secondary">
+              {formatRangeTitle(timeRange)}
+            </Text>
             <View style={styles.statRow}>
               <Stat label="Total Spend" value={formatMoney(summary.totalSpend)} hint={trend ?? undefined} />
               <Stat
@@ -187,6 +201,29 @@ export function DashboardScreen() {
           <Card>
             <DonutLegend title="Category split" slices={categorySplit} />
           </Card>
+          {state.categorySplit.length ? (
+            <Card>
+              <Text weight="700">Category breakdown</Text>
+              <Text size="caption" tone="secondary">
+                Amount and share for the selected range
+              </Text>
+              <View style={styles.categoryRows}>
+                {state.categorySplit
+                  .slice()
+                  .sort((a, b) => b.amount - a.amount)
+                  .map((item) => (
+                    <View key={item.category} style={styles.categoryRow}>
+                      <Text size="caption" tone="secondary">
+                        {item.category}
+                      </Text>
+                      <Text size="caption" weight="700">
+                        {formatMoney(item.amount)} • {item.sharePct.toFixed(1)}%
+                      </Text>
+                    </View>
+                  ))}
+              </View>
+            </Card>
+          ) : null}
           {budgetAlerts.length ? (
             <Card>
               <Text weight="700">Budget alerts</Text>
@@ -244,7 +281,16 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.sm,
     gap: theme.spacing.xs
   },
+  categoryRows: {
+    marginTop: theme.spacing.sm,
+    gap: theme.spacing.xs
+  },
   budgetRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  categoryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
