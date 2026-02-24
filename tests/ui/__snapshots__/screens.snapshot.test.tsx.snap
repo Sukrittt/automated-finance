@@ -486,72 +486,80 @@ exports[`Core screen snapshots matches onboarding screen 1`] = `
     </View>
   </View>
   <View
-    accessibilityState={
-      {
-        "busy": undefined,
-        "checked": undefined,
-        "disabled": false,
-        "expanded": undefined,
-        "selected": undefined,
-      }
-    }
-    accessibilityValue={
-      {
-        "max": undefined,
-        "min": undefined,
-        "now": undefined,
-        "text": undefined,
-      }
-    }
-    accessible={true}
-    collapsable={false}
-    focusable={true}
-    onBlur={[Function]}
-    onClick={[Function]}
-    onFocus={[Function]}
-    onResponderGrant={[Function]}
-    onResponderMove={[Function]}
-    onResponderRelease={[Function]}
-    onResponderTerminate={[Function]}
-    onResponderTerminationRequest={[Function]}
-    onStartShouldSetResponder={[Function]}
     style={
-      [
-        {
-          "alignItems": "center",
-          "borderRadius": 999,
-          "height": 46,
-          "justifyContent": "center",
-          "paddingHorizontal": 20,
-        },
-        {
-          "backgroundColor": "#F0F0F0",
-          "borderColor": "#E9E9E9",
-          "borderWidth": 1,
-        },
-        false,
-        false,
-        undefined,
-      ]
+      {
+        "marginTop": 4,
+      }
     }
   >
-    <Text
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": false,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
       style={
         [
           {
-            "letterSpacing": 0.1,
+            "alignItems": "center",
+            "borderRadius": 999,
+            "height": 46,
+            "justifyContent": "center",
+            "paddingHorizontal": 20,
           },
           {
-            "color": "#111111",
-            "fontSize": 15,
-            "fontWeight": "600",
+            "backgroundColor": "#F0F0F0",
+            "borderColor": "#E9E9E9",
+            "borderWidth": 1,
           },
+          false,
+          false,
           undefined,
         ]
       }
     >
-      Send OTP
-    </Text>
+      <Text
+        style={
+          [
+            {
+              "letterSpacing": 0.1,
+            },
+            {
+              "color": "#111111",
+              "fontSize": 15,
+              "fontWeight": "600",
+            },
+            undefined,
+          ]
+        }
+      >
+        Send OTP
+      </Text>
+    </View>
   </View>
 </View>
 `;

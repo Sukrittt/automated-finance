@@ -10,7 +10,11 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "test:update": "jest -u"
+    "test:update": "jest -u",
+    "cohort:summary": "node scripts/cohort-summary.mjs",
+    "cohort:summary:json": "node scripts/cohort-summary.mjs --json",
+    "cohort:evidence": "node scripts/cohort-evidence.mjs",
+    "cohort:closeout": "node scripts/cohort-closeout.mjs"
   },
   "dependencies": {
     "expo": "~53.0.0",

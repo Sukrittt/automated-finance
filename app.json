@@ -14,6 +14,12 @@
     ],
     "android": {
       "package": "com.automatedfinance.app"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "162d1820-aa81-477d-8b1e-30bb94ce8881"
+      }
+    },
+    "owner": "sukrit04"
   }
 }

@@ -8,18 +8,18 @@
 
 | Item | Status | Owner | Evidence | Notes |
 |---|---|---|---|---|
-| Build signed and versioned | BLOCKED | Engineering | Pending | Requires release build pipeline run + artifact metadata (target: 2026-02-25) |
+| Build signed and versioned | DONE | Engineering | `.planning/SIGNED_BUILD_EVIDENCE.md`, `.planning/RELEASE_EXECUTION_RUNBOOK.md`, `eas.json`, `app.json` | Production Android AAB build finished (`dcec2ad2-d908-4750-87e4-511c7e1fb9a5`) with artifact URL and SHA-256 captured (2026-02-24) |
 | Release notes include known limitations | DONE | Product | `.planning/RELEASE_NOTES_DRAFT.md` | Drafted from implemented scope and known gaps (2026-02-24) |
-| Test cohort selected and onboarded | IN_PROGRESS | Product Ops | `.planning/BETA_OPERATIONS.md` | Cohort profile and onboarding path defined; invite execution pending (target: 2026-02-25) |
+| Test cohort selected and onboarded | IN_PROGRESS | Product Ops | `.planning/COHORT_INVITE_EXECUTION.md`, `.planning/RELEASE_EXECUTION_RUNBOOK.md` | Cohort profile defined; invite/roster templates + evidence automation are ready, pending live invite run and roster lock evidence (`npm run cohort:evidence`, target: 2026-02-25) |
 | Support channel and issue intake path defined | DONE | Product Ops | `.planning/BETA_OPERATIONS.md` | Canonical channel, intake template, severity escalation, and SLA documented |
 | Crash and event telemetry enabled | DONE | Engineering | `src/services/telemetry/*`, `App.tsx`, telemetry tests | Runtime structured console sink wired through auth/ingest/crash paths |
 | Monitoring checklist metrics ownership | DONE | Engineering + Product Ops | `.planning/BETA_OPERATIONS.md` | Owners assigned for OTP, parse failures, backlog, and crash-free sessions |
+| Monitoring signals validated against checklist | DONE | Engineering | `npm test -- tests/services/auth/auth.integration.test.ts tests/services/ingest/notificationIngestService.test.ts tests/services/telemetry/crash.test.ts tests/services/telemetry/runtimeReporter.test.ts tests/services/qualityGate/evaluator.test.ts`, `.planning/TEST_MATRIX.md` | Focused validation run passed (`5/5` suites, `18/18` tests) and monitoring/rollback evidence is linked |
 | Rollback criteria and action rehearsal | DONE | Engineering | `.planning/ROLLBACK_REHEARSAL.md` | Tabletop dry run completed against all rollback criteria (2026-02-24) |
 
 
 ## Known Gaps
 
-- No signed release artifact produced yet.
 - Tester invite execution and final roster lock are pending.
 
 ## Exit Rule For P7-T3
