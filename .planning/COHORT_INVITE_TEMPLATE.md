@@ -15,7 +15,7 @@ I’m inviting you to the closed beta of **Auto Finance** (Android), which auto-
 
 ### Beta Notes
 - This is a beta build (`v0.1.0`, build `1`).
-- Some features are still limited (charts/budget alerts are not final).
+- Some features are still limited (budget setup controls and backend-integrated budget sync are not final).
 - You may see occasional errors; please report screenshots and steps.
 
 ### Consent

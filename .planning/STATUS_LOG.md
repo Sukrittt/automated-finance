@@ -1,5 +1,162 @@
 # Status Log
 
+## 2026-02-25 (Current Session 25)
+
+### Session Goal
+
+- Update planning guidance to favor larger outcome bundles and lock in playful UX direction.
+
+### Completed
+
+- Updated next-session brief to enforce bundle-style execution (3-4 related tasks together when they close one user-visible outcome):
+  - `.planning/NEXT_SESSION_BRIEF.md`
+- Added explicit next-session implementation bundle:
+  - `BUD-01 + Playful UX baseline`
+- Expanded UI guidelines with Duolingo-inspired interaction direction:
+  - haptic feedback tiers
+  - short purposeful motion
+  - encouraging copy tone
+  - `.planning/UI_GUIDELINES.md`
+- Added architecture decision for playful UX direction:
+  - `ADR-019` in `.planning/DECISIONS.md`
+
+### Not Completed
+
+- Code implementation for `BUD-01` budget setup + playful interactions is still pending next build session.
+
+### Evidence
+
+- `.planning/NEXT_SESSION_BRIEF.md`
+- `.planning/UI_GUIDELINES.md`
+- `.planning/DECISIONS.md`
+
+### Blockers
+
+- Cohort onboarding remains deferred and `BLOCKED` in release readiness until tester roster data exists.
+
+### Next Session First Step
+
+- Implement `BUD-01` with local budget-limit persistence + playful save feedback (haptic + subtle motion), then update tests and tracker.
+
+## 2026-02-25 (Current Session 24)
+
+### Session Goal
+
+- Implement budget threshold warnings/alerts (`BUD-02`, `BUD-03`) and wire them into dashboard UI.
+
+### Completed
+
+- Added deterministic budget-threshold evaluator with default category limits:
+  - `src/services/budget/thresholds.ts`
+  - Emits `warning` at `>=80%` and `exceeded` at `>=100%`, sorted by severity.
+- Wired budget alerts into dashboard experience:
+  - `src/screens/DashboardScreen.tsx`
+  - Renders `Budget alerts` card from category spend split + baseline budget limits.
+- Added budget-threshold tests:
+  - `tests/services/budget/thresholds.test.ts`
+  - Covers warning threshold, exceeded threshold, and ignore-path cases.
+- Updated planning evidence/state docs:
+  - `.planning/TEST_MATRIX.md` (`BUD-02/03` now `Pass`)
+  - `.planning/REQUIREMENTS.md` (`BUD-02/03` now done)
+  - `.planning/RELEASE_NOTES_DRAFT.md` (limitation narrowed to `BUD-01`)
+  - `.planning/COHORT_INVITE_TEMPLATE.md` (removed outdated charts/budget-alert limitation wording)
+
+### Not Completed
+
+- Budget setup controls (`BUD-01`) are still pending.
+
+### Evidence
+
+- `npm test -- tests/services/budget/thresholds.test.ts tests/ui/visuals.components.test.tsx tests/services/dashboard/api.test.ts`
+  - Result: `3 passed` suites, `8 passed` tests.
+
+### Blockers
+
+- Cohort onboarding remains deferred and `BLOCKED` in release readiness until tester roster data exists.
+- Global typecheck baseline still has pre-existing test typing errors outside this slice:
+  - `tests/services/telemetry/crash.test.ts`
+  - `tests/ui/reviewQueue.states.test.tsx`
+
+### Next Session First Step
+
+- Implement `BUD-01` budget setup flow (set/edit monthly category limits) and connect it to budget-alert evaluation inputs.
+
+## 2026-02-25 (Current Session 23)
+
+### Session Goal
+
+- Resume product implementation by closing visualization requirements (`VIS-01`, `VIS-02`, `VIS-03`) with code + tests.
+
+### Completed
+
+- Implemented donut-style category visualization (ring + legend) in dashboard visuals:
+  - `src/charts/DonutLegend.tsx`
+- Upgraded trend visualization to line-style chart with connector segments and axis labels:
+  - `src/charts/LineChart.tsx`
+- Added line trend card to dashboard to expose trend chart in core flow:
+  - `src/screens/DashboardScreen.tsx`
+- Added visualization component test coverage:
+  - `tests/ui/visuals.components.test.tsx`
+- Updated planning evidence/state docs:
+  - `.planning/TEST_MATRIX.md` (`VIS-01/02/03` now `Pass`)
+  - `.planning/REQUIREMENTS.md` (`VIS-01/02/03` now done)
+  - `.planning/RELEASE_NOTES_DRAFT.md` (removed chart-implementation limitation)
+
+### Not Completed
+
+- Budget threshold warnings/alerts (`BUD-02`, `BUD-03`) remain pending.
+
+### Evidence
+
+- `npm test -- tests/ui/visuals.components.test.tsx`
+  - Result: `1 passed` suite, `3 passed` tests.
+- `npm test -- tests/ui/visuals.components.test.tsx tests/ui/screens.snapshot.test.tsx tests/services/dashboard/api.test.ts`
+  - Result: `3 passed` suites, `11 passed` tests.
+
+### Blockers
+
+- Cohort onboarding remains deferred and `BLOCKED` in release readiness until tester roster data exists.
+- Global typecheck baseline still has pre-existing test typing errors outside this slice:
+  - `tests/services/telemetry/crash.test.ts`
+  - `tests/ui/reviewQueue.states.test.tsx`
+
+### Next Session First Step
+
+- Start budgeting alerts slice (`BUD-02`, `BUD-03`) with deterministic threshold evaluator + UI warning/alert surfaces.
+
+## 2026-02-25 (Current Session 22)
+
+### Session Goal
+
+- Align planning state with decision to defer cohort onboarding (no tester roster data yet) and resume implementation slices now.
+
+### Completed
+
+- Updated release-readiness cohort row from `IN_PROGRESS` to `BLOCKED` with explicit unblock condition and target date (`2026-03-06`):
+  - `.planning/RELEASE_READINESS.md`
+- Marked `P7-T3` as `DONE` for tracking completeness and shifted session focus back to implementation:
+  - `.planning/TASK_BOARD.md`
+- Rewrote next-session brief objective/commands/guardrails to start product build work while keeping deferred blocker visibility:
+  - `.planning/NEXT_SESSION_BRIEF.md`
+
+### Not Completed
+
+- Cohort execution itself remains pending until real tester name/email/acceptance data is available.
+
+### Evidence
+
+- `.planning/RELEASE_READINESS.md`
+- `.planning/TASK_BOARD.md`
+- `.planning/NEXT_SESSION_BRIEF.md`
+
+### Blockers
+
+- No active tester roster data exists yet (names, emails, acceptance states).
+
+### Next Session First Step
+
+- Select and execute one implementation slice (recommended: visualization or budgeting), and keep cohort row `BLOCKED` until final pre-release pass.
+
 ## 2026-02-25 (Current Session 21)
 
 ### Session Goal

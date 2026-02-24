@@ -20,11 +20,10 @@
 
 - Crash and event telemetry is currently provider-agnostic with no external sink configured yet.
 - Quality gate consumes supplied KPI/issue snapshot inputs; live production metric ingestion is pending.
-- Budgeting alerts (`BUD-02`, `BUD-03`) and chart visualizations (`VIS-01` to `VIS-03`) are not implemented.
+- Category budget-limit setup (`BUD-01`) is not implemented; current alerts use baseline category limits.
 - Backend summary integration is pending for `/v1/summary`; current summary baseline is local aggregation logic.
 - Category feedback persistence is currently in-memory baseline only.
 
 ## Rollback Reminder
 
 - Stop rollout expansion on: P0 auth failure trend, severe parse regression, or summary data-integrity mismatch.
-

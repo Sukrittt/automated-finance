@@ -107,3 +107,9 @@
 - Decision: Use a runtime structured console telemetry reporter as the immediate sink for auth/ingest/crash events, with recent-event in-memory retention for local diagnostics.
 - Reason: Closes telemetry-readiness blocker quickly without introducing external provider setup risk in the current release-readiness slice.
 - Impact: Telemetry events are now emitted in runtime by default through app wiring; future external backend integration can be layered by swapping reporter implementation.
+
+## ADR-019: Playful UX Interaction Direction
+- Date: 2026-02-25
+- Decision: Adopt a playful, game-like interaction layer (Duolingo-inspired) using lightweight haptics, short motion feedback, and encouraging copy on key actions.
+- Reason: Increase daily engagement and perceived smoothness without adding feature complexity.
+- Impact: New UI work should include interaction feedback acceptance criteria, starting with budget setup/save actions and key dashboard interactions.

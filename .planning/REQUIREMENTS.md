@@ -29,15 +29,15 @@
 
 ### Visualization
 
-- [ ] **VIS-01**: User can view spending as pie/donut chart by category
-- [ ] **VIS-02**: User can view spending as bar chart over time periods
-- [ ] **VIS-03**: User can view spending as line chart for trends
+- [x] **VIS-01**: User can view spending as pie/donut chart by category
+- [x] **VIS-02**: User can view spending as bar chart over time periods
+- [x] **VIS-03**: User can view spending as line chart for trends
 
 ### Budgeting
 
 - [ ] **BUD-01**: User can set monthly budget limits per category
-- [ ] **BUD-02**: User receives warning when approaching budget limit (80%)
-- [ ] **BUD-03**: User receives alert when budget is exceeded
+- [x] **BUD-02**: User receives warning when approaching budget limit (80%)
+- [x] **BUD-03**: User receives alert when budget is exceeded
 
 ## v2 Requirements
 
@@ -74,12 +74,12 @@
 | INS-02 | Phase 1 | Pending |
 | INS-03 | Phase 1 | Pending |
 | INS-04 | Phase 1 | Pending |
-| VIS-01 | Phase 1 | Pending |
-| VIS-02 | Phase 1 | Pending |
-| VIS-03 | Phase 1 | Pending |
+| VIS-01 | Phase 1 | Done |
+| VIS-02 | Phase 1 | Done |
+| VIS-03 | Phase 1 | Done |
 | BUD-01 | Phase 1 | Pending |
-| BUD-02 | Phase 1 | Pending |
-| BUD-03 | Phase 1 | Pending |
+| BUD-02 | Phase 1 | Done |
+| BUD-03 | Phase 1 | Done |
 
 **Coverage:**
 - v1 requirements: 19 total
@@ -88,4 +88,4 @@
 
 ---
 *Requirements defined: 2026-02-24*
-*Last updated: 2026-02-24 after initial definition*
+*Last updated: 2026-02-25 after visualization + budget-alert slice implementation*

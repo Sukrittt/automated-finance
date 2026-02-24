@@ -4,6 +4,8 @@ import { Button, Card, Chip, Stat, Text } from '../components';
 import { theme } from '../theme';
 import { BarChart } from '../charts/BarChart';
 import { DonutLegend } from '../charts/DonutLegend';
+import { LineChart } from '../charts/LineChart';
+import { DEFAULT_CATEGORY_BUDGETS, evaluateBudgetAlerts } from '../services/budget/thresholds';
 import { DashboardSummaryContract, fetchDashboardSummary } from '../services/dashboard/api';
 import { TimeRange } from '../types/view-models';
 
@@ -35,6 +37,18 @@ function formatDateLabel(dateISO: string): string {
   }
 
   return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
+function formatWeekdayLabel(dateISO: string): string {
+  const date = new Date(dateISO);
+  if (Number.isNaN(date.getTime())) {
+    return dateISO;
+  }
+  return date.toLocaleDateString('en-IN', { weekday: 'short' });
+}
+
+function formatBudgetLimit(value: number): string {
+  return `Rs ${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
 export function DashboardScreen() {
@@ -70,12 +84,27 @@ export function DashboardScreen() {
     () => state?.dailySpend.map((item) => formatDateLabel(item.dateISO)) ?? [],
     [state]
   );
+  const trendLabels = useMemo(
+    () => state?.dailySpend.map((item) => formatWeekdayLabel(item.dateISO)) ?? [],
+    [state]
+  );
   const categorySplit = useMemo(
     () =>
       state?.categorySplit.map((item) => ({
         label: item.category,
         value: Math.round(item.sharePct)
       })) ?? [],
+    [state]
+  );
+  const budgetAlerts = useMemo(
+    () =>
+      evaluateBudgetAlerts(
+        state?.categorySplit.map((item) => ({
+          category: item.category,
+          spent: item.amount
+        })) ?? [],
+        DEFAULT_CATEGORY_BUDGETS
+      ),
     [state]
   );
 
@@ -133,8 +162,31 @@ export function DashboardScreen() {
             <BarChart title="Daily spend" values={dailySpendValues} labels={dailySpendLabels} />
           </Card>
           <Card>
+            <LineChart title="Spend trend" values={dailySpendValues} labels={trendLabels} />
+          </Card>
+          <Card>
             <DonutLegend title="Category split" slices={categorySplit} />
           </Card>
+          {budgetAlerts.length ? (
+            <Card>
+              <Text weight="700">Budget alerts</Text>
+              <Text size="caption" tone="secondary">
+                Tracking category spend vs monthly limits
+              </Text>
+              <View style={styles.budgetRows}>
+                {budgetAlerts.map((alert) => (
+                  <View key={alert.category} style={styles.budgetRow}>
+                    <Text size="caption" weight="600">
+                      {alert.category}
+                    </Text>
+                    <Text size="caption" tone={alert.level === 'exceeded' ? 'negative' : 'secondary'}>
+                      {alert.usagePct.toFixed(1)}% of {formatBudgetLimit(alert.monthlyLimit)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </Card>
+          ) : null}
         </>
       ) : null}
       {!loading && !loadError && state ? (
@@ -165,5 +217,14 @@ const styles = StyleSheet.create({
   },
   badge: {
     marginTop: theme.spacing.sm
+  },
+  budgetRows: {
+    marginTop: theme.spacing.sm,
+    gap: theme.spacing.xs
+  },
+  budgetRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   }
 });
