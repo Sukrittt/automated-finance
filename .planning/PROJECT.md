@@ -25,7 +25,9 @@ Automatically capture and categorize UPI payment notifications to provide users 
 
 ### Active
 
-(None yet — define what to build next)
+- Execution system and canonical planning docs established in `.planning/`
+- MVP phase roadmap and task board initialized
+- UI direction locked: playful-light, layered summaries, low-overwhelm design
 
 ### Out of Scope
 
@@ -54,4 +56,13 @@ This is an existing brownfield project with mapped codebase. The notification ca
 | Dependency injection in ingest service | Testability, flexible deps | ✓ Good |
 
 ---
-*Last updated: 2026-02-23 after planning initialization*
+## Planning Control Center
+
+- Execution workflow: `.planning/EXECUTION_SYSTEM.md`
+- Roadmap: `.planning/ROADMAP.md`
+- Phases: `.planning/PHASES.md`
+- Task board: `.planning/TASK_BOARD.md`
+- Status log: `.planning/STATUS_LOG.md`
+
+---
+*Last updated: 2026-02-24 after execution-system implementation*
