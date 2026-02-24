@@ -13,6 +13,8 @@ import {
   TransactionsScreen
 } from './src/screens';
 import { startIngestRuntime, stopIngestRuntime } from './src/services/ingest/runtime';
+import { installCrashTelemetry } from './src/services/telemetry/crash';
+import { getRuntimeTelemetryReporter } from './src/services/telemetry/runtimeReporter';
 
 type Tab = 'home' | 'transactions' | 'review' | 'insights' | 'settings';
 
@@ -25,11 +27,16 @@ const tabs: { key: Tab; label: string }[] = [
 ];
 
 export default function App() {
-  const [authService] = useState(() => createAppAuthService());
+  const telemetryReporter = useMemo(() => getRuntimeTelemetryReporter(), []);
+  const [authService] = useState(() => createAppAuthService({ telemetryReporter }));
   const [authReady, setAuthReady] = useState(false);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [tab, setTab] = useState<Tab>('home');
+
+  useEffect(() => {
+    installCrashTelemetry(telemetryReporter);
+  }, [telemetryReporter]);
 
   useEffect(() => {
     if (!session) {
@@ -37,12 +44,12 @@ export default function App() {
       return;
     }
 
-    startIngestRuntime();
+    startIngestRuntime(telemetryReporter);
 
     return () => {
       stopIngestRuntime();
     };
-  }, [session]);
+  }, [session, telemetryReporter]);
 
   useEffect(() => {
     let active = true;

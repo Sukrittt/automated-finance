@@ -1,4 +1,5 @@
 import { apiRequest } from '../api/client';
+import { recordCategoryFeedback } from '../categorization/categoryRules';
 import { ReviewQueueItemVM } from '../../types/view-models';
 
 type TransactionRecord = {
@@ -62,6 +63,7 @@ export async function acceptReviewItem(id: string): Promise<void> {
 
 type EditReviewPayload = {
   category: string;
+  merchantRaw?: string;
   merchantNormalized?: string;
   txnAtISO?: string;
   note?: string;
@@ -79,5 +81,11 @@ export async function editReviewItem(id: string, data: EditReviewPayload): Promi
   await apiRequest(`/v1/transactions/${id}`, {
     method: 'PATCH',
     body: payload
+  });
+
+  recordCategoryFeedback({
+    merchantRaw: data.merchantRaw,
+    merchantNormalized: data.merchantNormalized,
+    correctedCategory: data.category
   });
 }

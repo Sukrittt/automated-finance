@@ -1,4 +1,4 @@
-export type TimeRange = 'week' | 'month' | 'quarter';
+export type TimeRange = 'day' | 'week' | 'month';
 
 export interface DashboardSummaryVM {
   required: {

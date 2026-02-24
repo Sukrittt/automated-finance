@@ -1,4 +1,5 @@
 import type { CapturedNotification } from '../notifications/nativeListener';
+import { getNoopTelemetryReporter, type TelemetryReporter } from '../telemetry/reporter';
 import { IngestOfflineQueue } from './offlineQueue';
 import { mapCapturedNotificationToIngestEvent } from './payloadMapper';
 import { postNotificationIngestBatch } from './api';
@@ -10,6 +11,7 @@ type NotificationIngestDependencies = {
   getDeviceId: () => string | null;
   getAuthToken?: () => string | undefined;
   pollIntervalMs?: number;
+  telemetryReporter?: TelemetryReporter;
 };
 
 export class NotificationIngestService {
@@ -18,6 +20,7 @@ export class NotificationIngestService {
   private readonly seenFingerprints = new Map<string, number>();
 
   private readonly pollIntervalMs: number;
+  private readonly telemetryReporter: TelemetryReporter;
 
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -25,6 +28,7 @@ export class NotificationIngestService {
 
   constructor(private readonly deps: NotificationIngestDependencies) {
     this.pollIntervalMs = deps.pollIntervalMs ?? 3000;
+    this.telemetryReporter = deps.telemetryReporter ?? getNoopTelemetryReporter();
   }
 
   start(): void {
@@ -75,7 +79,22 @@ export class NotificationIngestService {
 
     await this.queue.flush(async (events: IngestNotificationEvent[]) => {
       await postNotificationIngestBatch(deviceId, events, token);
+      this.telemetryReporter.track({
+        name: 'ingest_flush_succeeded',
+        atISO: new Date().toISOString(),
+        properties: {
+          batch_size: events.length
+        }
+      });
     }, nowMs);
+
+    this.telemetryReporter.track({
+      name: 'ingest_queue_size_sample',
+      atISO: new Date().toISOString(),
+      properties: {
+        queue_size: this.getQueueSize()
+      }
+    });
   }
 
   getQueueSize(): number {
@@ -86,15 +105,37 @@ export class NotificationIngestService {
     const mapped = mapCapturedNotificationToIngestEvent(notification);
 
     if (!mapped) {
+      this.telemetryReporter.track({
+        name: 'ingest_parse_failed',
+        atISO: new Date().toISOString(),
+        properties: {
+          package_name: notification.packageName
+        }
+      });
       return;
     }
 
     if (this.seenFingerprints.has(mapped.dedupeFingerprint)) {
+      this.telemetryReporter.track({
+        name: 'ingest_duplicate_dropped',
+        atISO: new Date().toISOString(),
+        properties: {
+          source_app: mapped.apiEvent.source_app
+        }
+      });
       return;
     }
 
     this.seenFingerprints.set(mapped.dedupeFingerprint, nowMs);
     this.queue.enqueue(mapped.apiEvent, nowMs);
+    this.telemetryReporter.track({
+      name: 'ingest_event_enqueued',
+      atISO: new Date().toISOString(),
+      properties: {
+        source_app: mapped.apiEvent.source_app,
+        review_required: mapped.apiEvent.review_required
+      }
+    });
   }
 
   private pruneSeenFingerprints(nowMs: number): void {

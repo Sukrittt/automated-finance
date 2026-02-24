@@ -31,16 +31,16 @@ describe('dashboard api', () => {
   it('computes stable date ranges for each time range', () => {
     const now = new Date('2026-02-22T12:00:00.000Z');
 
+    expect(getSummaryDateRange('day', now)).toEqual({
+      fromISO: '2026-02-22',
+      toISO: '2026-02-22'
+    });
     expect(getSummaryDateRange('week', now)).toEqual({
       fromISO: '2026-02-16',
       toISO: '2026-02-22'
     });
     expect(getSummaryDateRange('month', now)).toEqual({
       fromISO: '2026-02-01',
-      toISO: '2026-02-22'
-    });
-    expect(getSummaryDateRange('quarter', now)).toEqual({
-      fromISO: '2026-01-01',
       toISO: '2026-02-22'
     });
   });

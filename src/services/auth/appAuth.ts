@@ -1,5 +1,6 @@
 import { createOtpAuthService } from './factory';
 import { AuthServiceError } from './supabasePhoneOtp';
+import type { TelemetryReporter } from '../telemetry/reporter';
 import type {
   AuthSession,
   AuthStateChangeEvent,
@@ -88,9 +89,15 @@ function createFallbackAuthService(): OtpAuthService {
   };
 }
 
-export function createAppAuthService(): OtpAuthService {
+export interface AppAuthServiceOptions {
+  telemetryReporter?: TelemetryReporter;
+}
+
+export function createAppAuthService(options: AppAuthServiceOptions = {}): OtpAuthService {
   try {
-    return createOtpAuthService();
+    return createOtpAuthService({
+      telemetryReporter: options.telemetryReporter
+    });
   } catch {
     return createFallbackAuthService();
   }

@@ -1,6 +1,7 @@
 import type { CapturedNotification } from '../notifications/nativeListener';
 import { buildDedupeFingerprint } from '../dedupe/fingerprint';
 import { parseUpiNotification } from '../parsing/upiParser';
+import { suggestCategoryFromParsedTransaction } from '../categorization/categoryRules';
 import type { MappedIngestEvent } from './types';
 
 export const REVIEW_QUEUE_CONFIDENCE_THRESHOLD = 0.9;
@@ -32,6 +33,12 @@ export function mapCapturedNotificationToIngestEvent(
 
   const notificationTitle = notification.title?.trim();
   const notificationBody = notification.body?.trim();
+  const suggestedCategory = suggestCategoryFromParsedTransaction({
+    direction: parsed.direction,
+    merchantRaw: parsed.merchantRaw,
+    merchantNormalized: parsed.merchantNormalized,
+    sourceApp: parsed.sourceApp
+  });
 
   return {
     dedupeFingerprint,
@@ -49,7 +56,9 @@ export function mapCapturedNotificationToIngestEvent(
       parsed_upi_ref: parsed.upiRef,
       parser_template: parsed.matchedTemplate,
       parse_confidence: parsed.confidence,
-      review_required: parsed.confidence < REVIEW_QUEUE_CONFIDENCE_THRESHOLD
+      review_required: parsed.confidence < REVIEW_QUEUE_CONFIDENCE_THRESHOLD,
+      category_prediction: suggestedCategory.category,
+      category_prediction_confidence: suggestedCategory.confidence
     }
   };
 }
