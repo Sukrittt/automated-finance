@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Card, Input, Sheet, Text } from '../components';
 import { theme } from '../theme';
+import { triggerSuccessHaptic, triggerWarningHaptic } from '../services/feedback/playful';
 import {
   acceptReviewItem,
   editReviewItem,
@@ -39,6 +40,7 @@ export function ReviewQueueScreen() {
   const [noteDraft, setNoteDraft] = useState('');
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const activeItem = useMemo(
     () => items.find((item) => item.id === activeId) ?? null,
@@ -69,6 +71,7 @@ export function ReviewQueueScreen() {
     setCategoryDraft(item.suggestedCategory);
     setNoteDraft('');
     setSubmitError(null);
+    setStatusMessage(null);
   }, []);
 
   const closeEditSheet = useCallback(() => {
@@ -90,9 +93,12 @@ export function ReviewQueueScreen() {
       try {
         await acceptReviewItem(id);
         removeProcessedItem(id);
+        setStatusMessage('Nice catch. Transaction confirmed.');
+        triggerSuccessHaptic();
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to confirm transaction.';
         setSubmitError(message);
+        triggerWarningHaptic();
       } finally {
         setSubmittingId(null);
       }
@@ -121,9 +127,12 @@ export function ReviewQueueScreen() {
       });
       removeProcessedItem(activeItem.id);
       setActiveId(null);
+      setStatusMessage('Great fix. Future matches will improve from this edit.');
+      triggerSuccessHaptic();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to submit correction.';
       setSubmitError(message);
+      triggerWarningHaptic();
     } finally {
       setSubmittingId(null);
     }
@@ -135,6 +144,7 @@ export function ReviewQueueScreen() {
         Review Queue
       </Text>
       <Text tone="secondary">Low-confidence transactions need your confirmation.</Text>
+      {statusMessage ? <Text tone="positive">{statusMessage}</Text> : null}
       {loading ? <Text tone="secondary">Loading review queue...</Text> : null}
       {loadError ? (
         <Card>

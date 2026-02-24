@@ -1,5 +1,55 @@
 # Status Log
 
+## 2026-02-25 (Current Session 26)
+
+### Session Goal
+
+- Implement `BUD-01 + Playful UX baseline` as one end-to-end bundle.
+
+### Completed
+
+- Added local budget-limit persistence service and reset flow:
+  - `src/services/budget/storage.ts`
+  - AsyncStorage-backed load/save/reset for category monthly limits.
+- Built dedicated budget setup/edit UI:
+  - `src/screens/BudgetsScreen.tsx`
+  - Added tab navigation entry in `App.tsx`.
+- Wired dashboard budget alerts to persisted user limits (instead of static defaults only):
+  - `src/screens/DashboardScreen.tsx`
+- Added playful interaction baseline on key actions:
+  - Button spring/tap feedback + light haptic tap:
+    - `src/components/Button.tsx`
+  - Success/warning haptic helpers:
+    - `src/services/feedback/playful.ts`
+  - Friendly success copy + success/warning haptics in review correction flow:
+    - `src/screens/ReviewQueueScreen.tsx`
+- Added/updated tests for setup behavior + alert recomputation and snapshots:
+  - `tests/services/budget/storage.test.ts`
+  - `tests/ui/budgetFlow.test.tsx`
+  - `tests/ui/screens.snapshot.test.tsx`
+  - `tests/setup.ts` (AsyncStorage mock)
+- Updated planning evidence/docs:
+  - `.planning/REQUIREMENTS.md` (`BUD-01` -> done)
+  - `.planning/TEST_MATRIX.md` (budget setup + playful UX rows)
+  - `.planning/RELEASE_NOTES_DRAFT.md` (budget setup/playful UX added to included scope)
+
+### Not Completed
+
+- No external telemetry provider wiring was added in this bundle (still runtime sink baseline).
+
+### Evidence
+
+- `npm test -- tests/services/budget/storage.test.ts tests/services/budget/thresholds.test.ts tests/ui/budgetFlow.test.tsx tests/ui/reviewQueue.states.test.tsx tests/ui/screens.snapshot.test.tsx`
+  - Result: `5 passed` suites, `18 passed` tests.
+
+### Blockers
+
+- Cohort onboarding remains deferred and `BLOCKED` in release readiness until tester roster data exists.
+
+### Next Session First Step
+
+- Close next requirement slice as a bundle: summary + category surfaces (`SUM-01..04`, `CAT-02/03`) with one dashboard/transactions pass and matching tests.
+
 ## 2026-02-25 (Current Session 25)
 
 ### Session Goal

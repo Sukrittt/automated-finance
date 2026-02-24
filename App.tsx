@@ -5,6 +5,7 @@ import { Text } from './src/components';
 import { theme } from './src/theme';
 import { createAppAuthService, type AuthSession } from './src/services/auth';
 import {
+  BudgetsScreen,
   DashboardScreen,
   InsightsScreen,
   OnboardingScreen,
@@ -16,12 +17,13 @@ import { startIngestRuntime, stopIngestRuntime } from './src/services/ingest/run
 import { installCrashTelemetry } from './src/services/telemetry/crash';
 import { getRuntimeTelemetryReporter } from './src/services/telemetry/runtimeReporter';
 
-type Tab = 'home' | 'transactions' | 'review' | 'insights' | 'settings';
+type Tab = 'home' | 'transactions' | 'review' | 'budgets' | 'insights' | 'settings';
 
 const tabs: { key: Tab; label: string }[] = [
   { key: 'home', label: 'Home' },
   { key: 'transactions', label: 'Txns' },
   { key: 'review', label: 'Review' },
+  { key: 'budgets', label: 'Budgets' },
   { key: 'insights', label: 'Insights' },
   { key: 'settings', label: 'Settings' }
 ];
@@ -139,6 +141,8 @@ export default function App() {
         return <TransactionsScreen />;
       case 'review':
         return <ReviewQueueScreen />;
+      case 'budgets':
+        return <BudgetsScreen />;
       case 'insights':
         return <InsightsScreen />;
       case 'settings':
