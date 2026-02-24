@@ -15,6 +15,8 @@ export interface IngestNotificationEvent {
   parser_template: string;
   parse_confidence: number;
   review_required: boolean;
+  category_prediction?: string;
+  category_prediction_confidence?: number;
 }
 
 export interface IngestBatchRequest {

@@ -88,6 +88,12 @@ export class AuthServiceError extends Error {
   }
 }
 
+export interface SupabasePhoneOtpAuthOptions {
+  requestTimeoutMs?: number;
+  requestOtpMaxRetries?: number;
+  sleepMs?: (durationMs: number) => Promise<void>;
+}
+
 function toIsoFromUnixSeconds(value?: number | null): string | undefined {
   if (!value || !Number.isFinite(value)) {
     return undefined;
@@ -139,27 +145,125 @@ function mapSupabaseError(error: SupabaseAuthError): AuthServiceError {
   return new AuthServiceError('AUTH_ERROR', message, status);
 }
 
-export function createSupabasePhoneOtpAuthService(client: SupabaseLikeClient): OtpAuthService {
+function isTransientAuthError(error: AuthServiceError): boolean {
+  if (error.code === 'TIMEOUT' || error.code === 'NETWORK_ERROR') {
+    return true;
+  }
+
+  if (error.code === 'AUTH_ERROR' && (error.status === undefined || error.status >= 500)) {
+    return true;
+  }
+
+  return false;
+}
+
+function toAuthServiceError(error: unknown): AuthServiceError {
+  if (error instanceof AuthServiceError) {
+    return error;
+  }
+
+  if (error instanceof Error) {
+    const message = error.message || 'Auth request failed';
+    if (/network|fetch|connection|timeout/i.test(message)) {
+      return new AuthServiceError('NETWORK_ERROR', message);
+    }
+
+    return new AuthServiceError('AUTH_ERROR', message);
+  }
+
+  return new AuthServiceError('AUTH_ERROR', 'Auth request failed');
+}
+
+async function runWithTimeout<T>(
+  operation: Promise<T>,
+  timeoutMs: number,
+  timeoutMessage: string
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new AuthServiceError('TIMEOUT', timeoutMessage));
+    }, timeoutMs);
+
+    operation
+      .then((result) => {
+        clearTimeout(timer);
+        resolve(result);
+      })
+      .catch((error: unknown) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
+
+function defaultSleepMs(durationMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, durationMs);
+  });
+}
+
+export function createSupabasePhoneOtpAuthService(
+  client: SupabaseLikeClient,
+  options: SupabasePhoneOtpAuthOptions = {}
+): OtpAuthService {
+  const requestTimeoutMs = options.requestTimeoutMs ?? 10_000;
+  const requestOtpMaxRetries = Math.max(0, options.requestOtpMaxRetries ?? 2);
+  const sleepMs = options.sleepMs ?? defaultSleepMs;
+
+  async function callWithTimeout<T>(operation: () => Promise<T>, timeoutLabel: string): Promise<T> {
+    try {
+      return await runWithTimeout(operation(), requestTimeoutMs, `${timeoutLabel} timed out`);
+    } catch (error) {
+      throw toAuthServiceError(error);
+    }
+  }
+
   return {
     provider: 'supabase-phone-otp',
     async requestOtp(input: RequestOtpInput): Promise<RequestOtpResult> {
-      const result = await client.auth.signInWithOtp({ phone: input.phoneE164 });
-      if (result.error) {
-        throw mapSupabaseError(result.error);
+      let attempt = 0;
+      let lastError: AuthServiceError | null = null;
+
+      while (attempt <= requestOtpMaxRetries) {
+        try {
+          const result = await callWithTimeout(
+            () => client.auth.signInWithOtp({ phone: input.phoneE164 }),
+            'OTP request'
+          );
+          if (result.error) {
+            throw mapSupabaseError(result.error);
+          }
+
+          const challengeId = result.data?.messageId || `${Date.now()}`;
+
+          return {
+            challengeId
+          };
+        } catch (error) {
+          const mapped = toAuthServiceError(error);
+          lastError = mapped;
+          if (attempt >= requestOtpMaxRetries || !isTransientAuthError(mapped)) {
+            throw mapped;
+          }
+
+          const backoffMs = 250 * Math.pow(2, attempt);
+          await sleepMs(backoffMs);
+          attempt += 1;
+        }
       }
 
-      const challengeId = result.data?.messageId || `${Date.now()}`;
-
-      return {
-        challengeId
-      };
+      throw lastError ?? new AuthServiceError('AUTH_ERROR', 'Auth request failed');
     },
     async verifyOtp(input: VerifyOtpInput): Promise<VerifyOtpResult> {
-      const result = await client.auth.verifyOtp({
-        phone: input.phoneE164,
-        token: input.otpCode,
-        type: 'sms'
-      });
+      const result = await callWithTimeout(
+        () =>
+          client.auth.verifyOtp({
+            phone: input.phoneE164,
+            token: input.otpCode,
+            type: 'sms'
+          }),
+        'OTP verification'
+      );
 
       if (result.error) {
         throw mapSupabaseError(result.error);
@@ -175,7 +279,7 @@ export function createSupabasePhoneOtpAuthService(client: SupabaseLikeClient): O
       };
     },
     async getSession(): Promise<AuthSession | null> {
-      const result = await client.auth.getSession();
+      const result = await callWithTimeout(() => client.auth.getSession(), 'Get session');
       if (result.error) {
         throw mapSupabaseError(result.error);
       }
@@ -183,7 +287,7 @@ export function createSupabasePhoneOtpAuthService(client: SupabaseLikeClient): O
       return result.data?.session ? toAuthSession(result.data.session) : null;
     },
     async refreshSession(): Promise<AuthSession | null> {
-      const result = await client.auth.refreshSession();
+      const result = await callWithTimeout(() => client.auth.refreshSession(), 'Refresh session');
       if (result.error) {
         throw mapSupabaseError(result.error);
       }
@@ -191,7 +295,7 @@ export function createSupabasePhoneOtpAuthService(client: SupabaseLikeClient): O
       return result.data?.session ? toAuthSession(result.data.session) : null;
     },
     async signOut(): Promise<void> {
-      const result = await client.auth.signOut();
+      const result = await callWithTimeout(() => client.auth.signOut(), 'Sign out');
       if (result.error) {
         throw mapSupabaseError(result.error);
       }

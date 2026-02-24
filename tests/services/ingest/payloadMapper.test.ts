@@ -1,6 +1,11 @@
 import { mapCapturedNotificationToIngestEvent } from '../../../src/services/ingest/payloadMapper';
+import { __resetCategoryFeedbackForTests } from '../../../src/services/categorization/categoryRules';
 
 describe('mapCapturedNotificationToIngestEvent', () => {
+  beforeEach(() => {
+    __resetCategoryFeedbackForTests();
+  });
+
   it('maps a high-confidence notification and marks review as not required', () => {
     const mapped = mapCapturedNotificationToIngestEvent({
       packageName: 'com.google.android.apps.nbu.paisa.user',
@@ -19,6 +24,8 @@ describe('mapCapturedNotificationToIngestEvent', () => {
     expect(mapped?.apiEvent.parsed_merchant_normalized).toBe('abc store');
     expect(mapped?.apiEvent.parse_confidence).toBeGreaterThanOrEqual(0.9);
     expect(mapped?.apiEvent.review_required).toBe(false);
+    expect(mapped?.apiEvent.category_prediction).toBe('Shopping');
+    expect(mapped?.apiEvent.category_prediction_confidence).toBeGreaterThanOrEqual(0.9);
     expect(mapped?.dedupeFingerprint.startsWith('fp_')).toBe(true);
   });
 
@@ -44,5 +51,19 @@ describe('mapCapturedNotificationToIngestEvent', () => {
     });
 
     expect(mapped).toBeNull();
+  });
+
+  it('falls back to Income category for credit transactions', () => {
+    const mapped = mapCapturedNotificationToIngestEvent({
+      packageName: 'com.phonepe.app',
+      title: 'PhonePe',
+      body: 'Received ₹1200 from Rahul via UPI Ref 123456789012',
+      postedAt: Date.parse('2026-02-22T10:41:23.000Z')
+    });
+
+    expect(mapped).not.toBeNull();
+    expect(mapped?.apiEvent.parsed_direction).toBe('credit');
+    expect(mapped?.apiEvent.category_prediction).toBe('Income');
+    expect(mapped?.apiEvent.category_prediction_confidence).toBe(0.98);
   });
 });

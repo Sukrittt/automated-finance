@@ -75,6 +75,68 @@ exports[`Core screen snapshots matches dashboard screen 1`] = `
             "paddingHorizontal": 12,
             "paddingVertical": 8,
           },
+          false,
+        ]
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "letterSpacing": 0.1,
+            },
+            {
+              "color": "#5B5B5B",
+              "fontSize": 13,
+              "fontWeight": "600",
+            },
+            undefined,
+          ]
+        }
+      >
+        Day
+      </Text>
+    </View>
+    <View
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        [
+          {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#E9E9E9",
+            "borderRadius": 999,
+            "borderWidth": 1,
+            "paddingHorizontal": 12,
+            "paddingVertical": 8,
+          },
           {
             "backgroundColor": "#F3F3F3",
           },
@@ -159,68 +221,6 @@ exports[`Core screen snapshots matches dashboard screen 1`] = `
         }
       >
         Month
-      </Text>
-    </View>
-    <View
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": undefined,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
-      style={
-        [
-          {
-            "backgroundColor": "#FFFFFF",
-            "borderColor": "#E9E9E9",
-            "borderRadius": 999,
-            "borderWidth": 1,
-            "paddingHorizontal": 12,
-            "paddingVertical": 8,
-          },
-          false,
-        ]
-      }
-    >
-      <Text
-        style={
-          [
-            {
-              "letterSpacing": 0.1,
-            },
-            {
-              "color": "#5B5B5B",
-              "fontSize": 13,
-              "fontWeight": "600",
-            },
-            undefined,
-          ]
-        }
-      >
-        Quarter
       </Text>
     </View>
   </View>

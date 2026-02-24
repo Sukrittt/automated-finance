@@ -116,6 +116,7 @@ export function ReviewQueueScreen() {
     try {
       await editReviewItem(activeItem.id, {
         category,
+        merchantRaw: activeItem.rawMerchant,
         note: noteDraft.trim() || undefined
       });
       removeProcessedItem(activeItem.id);

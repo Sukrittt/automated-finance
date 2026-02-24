@@ -55,13 +55,6 @@ function getWeekStartMonday(date: Date): Date {
   return normalized;
 }
 
-function getQuarterStart(date: Date): Date {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const quarterStartMonth = Math.floor(month / 3) * 3;
-  return new Date(year, quarterStartMonth, 1);
-}
-
 export function getSummaryDateRange(
   timeRange: TimeRange,
   now: Date = new Date()
@@ -71,17 +64,17 @@ export function getSummaryDateRange(
   let from: Date;
 
   switch (timeRange) {
+    case 'day':
+      from = new Date(to);
+      break;
     case 'week':
       from = getWeekStartMonday(to);
       break;
     case 'month':
       from = new Date(to.getFullYear(), to.getMonth(), 1);
       break;
-    case 'quarter':
-      from = getQuarterStart(to);
-      break;
     default:
-      from = getWeekStartMonday(to);
+      from = new Date(to);
       break;
   }
 

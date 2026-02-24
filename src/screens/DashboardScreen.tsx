@@ -8,9 +8,9 @@ import { DashboardSummaryContract, fetchDashboardSummary } from '../services/das
 import { TimeRange } from '../types/view-models';
 
 const TIME_RANGE_OPTIONS: { label: string; value: TimeRange }[] = [
+  { label: 'Day', value: 'day' },
   { label: 'Week', value: 'week' },
-  { label: 'Month', value: 'month' },
-  { label: 'Quarter', value: 'quarter' }
+  { label: 'Month', value: 'month' }
 ];
 
 const EMPTY_STATE = {

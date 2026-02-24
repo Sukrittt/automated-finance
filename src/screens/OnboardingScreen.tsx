@@ -18,6 +18,7 @@ interface Props {
 type AuthStep = 'intro' | 'otp';
 
 const DEFAULT_COOLDOWN_SECONDS = 30;
+const MAX_VERIFY_ATTEMPTS = 3;
 const phoneE164Regex = /^\+[1-9]\d{7,14}$/;
 const otpRegex = /^\d{6}$/;
 
@@ -59,6 +60,12 @@ function toUiError(error: unknown): string {
     if (error.code === 'RATE_LIMITED') {
       return 'Too many attempts. Please wait for cooldown before retrying.';
     }
+    if (error.code === 'NETWORK_ERROR') {
+      return 'Network issue while contacting auth service. Check connection and retry.';
+    }
+    if (error.code === 'TIMEOUT') {
+      return 'Auth request timed out. Please retry in a moment.';
+    }
   }
 
   return 'Could not complete sign in. Please try again.';
@@ -74,6 +81,7 @@ export function OnboardingScreen({
   const [otpCode, setOtpCode] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [verifyAttemptCount, setVerifyAttemptCount] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -112,6 +120,7 @@ export function OnboardingScreen({
       const result = await authService.requestOtp({ phoneE164: normalizedPhone });
       setStep('otp');
       setCooldownSeconds(result.retryAfterSeconds ?? defaultCooldownSeconds);
+      setVerifyAttemptCount(0);
     } catch (error) {
       const retryAfterSeconds = getRetryAfterSecondsFromAuthError(error);
       if (retryAfterSeconds && retryAfterSeconds > 0) {
@@ -124,6 +133,11 @@ export function OnboardingScreen({
   }
 
   async function handleVerifyOtp() {
+    if (cooldownSeconds > 0) {
+      setErrorMessage(`Please wait ${cooldownSeconds}s before the next OTP attempt.`);
+      return;
+    }
+
     const normalizedOtpCode = otpCode.trim();
     if (!otpRegex.test(normalizedOtpCode)) {
       setErrorMessage('Enter the 6-digit OTP sent to your phone.');
@@ -137,12 +151,27 @@ export function OnboardingScreen({
         phoneE164: phoneE164.trim(),
         otpCode: normalizedOtpCode
       });
+      setVerifyAttemptCount(0);
       onContinue(result.session);
     } catch (error) {
       const retryAfterSeconds = getRetryAfterSecondsFromAuthError(error);
       if (retryAfterSeconds && retryAfterSeconds > 0) {
         setCooldownSeconds(retryAfterSeconds);
       }
+
+      if (error instanceof AuthServiceError && error.code === 'INVALID_OTP') {
+        const nextAttempts = verifyAttemptCount + 1;
+        setVerifyAttemptCount(nextAttempts);
+
+        if (nextAttempts >= MAX_VERIFY_ATTEMPTS) {
+          setCooldownSeconds(defaultCooldownSeconds);
+          setErrorMessage(
+            `Too many incorrect OTP attempts. Wait ${defaultCooldownSeconds}s or request a new code.`
+          );
+          return;
+        }
+      }
+
       setErrorMessage(toUiError(error));
     } finally {
       setSubmitting(false);
@@ -197,7 +226,15 @@ export function OnboardingScreen({
                 maxLength={6}
               />
             </View>
-            <Pressable disabled={submitting} onPress={() => setStep('intro')}>
+            <Pressable
+              disabled={submitting}
+              onPress={() => {
+                setStep('intro');
+                setVerifyAttemptCount(0);
+                setCooldownSeconds(0);
+                setErrorMessage(null);
+              }}
+            >
               <Text size="caption" tone="muted">
                 Edit phone number
               </Text>
@@ -211,11 +248,11 @@ export function OnboardingScreen({
             </Text>
           </View>
         ) : null}
-        {step === 'otp' ? (
-          <View style={styles.resendRow}>
-            <Button label={resendLabel} variant="outline" disabled={!canResend} onPress={handleRequestOtp} />
-          </View>
-        ) : null}
+      {step === 'otp' ? (
+        <View style={styles.resendRow}>
+          <Button label={resendLabel} variant="outline" disabled={!canResend} onPress={handleRequestOtp} />
+        </View>
+      ) : null}
       </Card>
       {step === 'intro' ? (
         <Button label={requestOtpLabel} onPress={handleRequestOtp} disabled={submitting} />
