@@ -3,6 +3,8 @@ import { buildDedupeFingerprint } from '../dedupe/fingerprint';
 import { parseUpiNotification } from '../parsing/upiParser';
 import type { MappedIngestEvent } from './types';
 
+export const REVIEW_QUEUE_CONFIDENCE_THRESHOLD = 0.9;
+
 export function mapCapturedNotificationToIngestEvent(
   notification: CapturedNotification
 ): MappedIngestEvent | null {
@@ -39,7 +41,15 @@ export function mapCapturedNotificationToIngestEvent(
       received_at: receivedAtISO,
       notification_title: notificationTitle || parsed.rawText,
       notification_body: notificationBody || parsed.rawText,
-      raw_payload_hash: buildRawPayloadHash(notification)
+      raw_payload_hash: buildRawPayloadHash(notification),
+      parsed_amount_paise: parsed.amountPaise,
+      parsed_direction: parsed.direction,
+      parsed_merchant_raw: parsed.merchantRaw,
+      parsed_merchant_normalized: parsed.merchantNormalized,
+      parsed_upi_ref: parsed.upiRef,
+      parser_template: parsed.matchedTemplate,
+      parse_confidence: parsed.confidence,
+      review_required: parsed.confidence < REVIEW_QUEUE_CONFIDENCE_THRESHOLD
     }
   };
 }

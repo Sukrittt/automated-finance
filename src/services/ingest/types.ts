@@ -7,6 +7,14 @@ export interface IngestNotificationEvent {
   notification_title: string;
   notification_body: string;
   raw_payload_hash: string;
+  parsed_amount_paise: number;
+  parsed_direction: 'debit' | 'credit';
+  parsed_merchant_raw: string;
+  parsed_merchant_normalized: string;
+  parsed_upi_ref?: string;
+  parser_template: string;
+  parse_confidence: number;
+  review_required: boolean;
 }
 
 export interface IngestBatchRequest {

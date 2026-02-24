@@ -31,6 +31,7 @@ interface ParserTemplate {
 
 const DEBIT_HINTS = ['paid', 'sent', 'debited', 'payment of', 'paying'];
 const CREDIT_HINTS = ['received', 'credited', 'refund', 'deposited', 'added'];
+const AMOUNT_PATTERN = /(?:₹|rs\.?\s?|inr\s?)(\d+(?:,\d{2,3})*(?:\.\d{1,2})?)/i;
 
 const UPI_TEMPLATES: ParserTemplate[] = [
   {
@@ -101,9 +102,14 @@ export function parseUpiNotification(payload: NotificationPayload): ParsedUpiNot
 }
 
 function parseCommonUpiNotification(rawText: string): Omit<ParsedUpiNotification, 'sourceApp' | 'matchedTemplate' | 'rawText'> | null {
-  const amountMatch = rawText.match(/(?:₹|rs\.?\s?)(\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/i);
+  const amountMatch = rawText.match(AMOUNT_PATTERN);
 
   if (!amountMatch) {
+    return null;
+  }
+
+  const hasUpiSignal = /\bupi\b|\butr\b|\bvpa\b|reference|ref\s*no|google pay|gpay|phonepe|paytm|bhim/i.test(rawText);
+  if (!hasUpiSignal) {
     return null;
   }
 
@@ -141,7 +147,7 @@ function parseCommonUpiNotification(rawText: string): Omit<ParsedUpiNotification
     merchantRaw,
     merchantNormalized: normalizeMerchant(merchantRaw),
     upiRef,
-    confidence: clamp(confidence, 0, 0.99)
+    confidence: clamp(Number(confidence.toFixed(2)), 0, 0.99)
   };
 }
 
@@ -161,7 +167,7 @@ function extractMerchant(rawText: string, direction: TransactionDirection): stri
   const patterns = direction === 'debit'
     ? [
       /(?:paid|sent|payment\s+of)\s+(?:₹|rs\.?\s?)?\s*\d[\d,.]*(?:\.\d{1,2})?\s+to\s+(.+?)(?:\s+via\s+upi|\s+upi\s+ref|\s+ref\s+no|\s+reference\s+no|\s+utr|[|,.]|$)/i,
-      /(?:paid\s+to|to)\s+(.+?)(?:\s+via\s+upi|\s+upi\s+ref|\s+ref\s+no|\s+reference\s+no|\s+utr|[|,.]|$)/i
+      /(?:debited|paid\s+to|to)\s+(.+?)(?:\s+via\s+upi|\s+upi\s+ref|\s+ref\s+no|\s+reference\s+no|\s+utr|[|,.]|$)/i
     ]
     : [
       /(?:received|credited)\s+(?:₹|rs\.?\s?)?\s*\d[\d,.]*(?:\.\d{1,2})?\s+from\s+(.+?)(?:\s+via\s+upi|\s+upi\s+ref|\s+ref\s+no|\s+reference\s+no|\s+utr|[|,.]|$)/i,
