@@ -7,16 +7,16 @@
 
 ### Spending Summaries
 
-- [ ] **SUM-01**: User can view daily spending summary with total amount and transaction count
-- [ ] **SUM-02**: User can view weekly spending summary with day-by-day breakdown
-- [ ] **SUM-03**: User can view monthly spending summary with comparison to previous months
-- [ ] **SUM-04**: User can switch between time periods (daily/weekly/monthly) via tab or selector
+- [x] **SUM-01**: User can view daily spending summary with total amount and transaction count
+- [x] **SUM-02**: User can view weekly spending summary with day-by-day breakdown
+- [x] **SUM-03**: User can view monthly spending summary with comparison to previous months
+- [x] **SUM-04**: User can switch between time periods (daily/weekly/monthly) via tab or selector
 
 ### Transaction Categorization
 
 - [ ] **CAT-01**: Transactions are automatically categorized based on UPI merchant/vpa
-- [ ] **CAT-02**: User can view spending by category (Food, Transport, Shopping, Bills, Entertainment, Others)
-- [ ] **CAT-03**: User can see category breakdown with percentage and amount
+- [x] **CAT-02**: User can view spending by category (Food, Transport, Shopping, Bills, Entertainment, Others)
+- [x] **CAT-03**: User can see category breakdown with percentage and amount
 - [ ] **CAT-04**: User can manually recategorize a transaction
 - [ ] **CAT-05**: Category suggestions improve over time based on user corrections
 
@@ -61,13 +61,13 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SUM-01 | Phase 1 | Pending |
-| SUM-02 | Phase 1 | Pending |
-| SUM-03 | Phase 1 | Pending |
-| SUM-04 | Phase 1 | Pending |
+| SUM-01 | Phase 1 | Done |
+| SUM-02 | Phase 1 | Done |
+| SUM-03 | Phase 1 | Done |
+| SUM-04 | Phase 1 | Done |
 | CAT-01 | Phase 1 | Pending |
-| CAT-02 | Phase 1 | Pending |
-| CAT-03 | Phase 1 | Pending |
+| CAT-02 | Phase 1 | Done |
+| CAT-03 | Phase 1 | Done |
 | CAT-04 | Phase 1 | Pending |
 | CAT-05 | Phase 1 | Pending |
 | INS-01 | Phase 1 | Pending |
@@ -88,4 +88,4 @@
 
 ---
 *Requirements defined: 2026-02-24*
-*Last updated: 2026-02-25 after budget setup + playful UX baseline implementation*
+*Last updated: 2026-02-25 after summary + category surface completion bundle*

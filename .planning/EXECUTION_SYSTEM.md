@@ -43,6 +43,14 @@ Micro-plan must include:
   - summarize evidence
   - update planning docs
 
+### 3.5 Ship each completed section before starting the next
+
+- If a full section/outcome bundle is completed, immediately ship it:
+  - create branch + commit + push
+  - open PR
+  - merge to `main` once checks/review are green
+- Do not start the next major section while previous completed section is still unmerged.
+
 ### 4. Close with handoff package
 
 Use this exact prompt:
@@ -91,6 +99,7 @@ Required closeout sections:
 - Keep commits small and mapped to task IDs.
 - After every session closeout, run the `yeet` skill for commit/push/PR creation.
 - Do not leave session work unshipped: merge the session PR to `main` once checks/review are green.
+- For every completed full section, PR + merge is mandatory before moving to the next section.
 - PR must include:
   - implemented tasks
   - test evidence

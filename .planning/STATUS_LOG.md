@@ -1,5 +1,80 @@
 # Status Log
 
+## 2026-02-25 (Current Session 28)
+
+### Session Goal
+
+- Quantify end-to-end app completion % and codify mandatory section-level PR+merge workflow.
+
+### Completed
+
+- Added explicit progress snapshot with weighted completion formula:
+  - `.planning/PROJECT.md`
+  - Metrics captured:
+    - v1 requirements: `12/19` (`63.2%`)
+    - task board phases: `16/16` (`100%`)
+    - release readiness done: `7/8` (`87.5%`)
+    - overall weighted MVP progress: `76%`
+- Updated execution workflow rule so each completed full section must be PR’d and merged to `main` before starting the next section:
+  - `.planning/EXECUTION_SYSTEM.md`
+
+### Not Completed
+
+- No additional product code changes in this step; this is process + visibility hardening.
+
+### Evidence
+
+- `.planning/PROJECT.md`
+- `.planning/EXECUTION_SYSTEM.md`
+
+### Blockers
+
+- Cohort onboarding remains deferred and `BLOCKED` in release readiness until tester roster data exists.
+
+### Next Session First Step
+
+- Continue section-based execution with mandatory PR+merge cadence after each completed section.
+
+## 2026-02-25 (Current Session 27)
+
+### Session Goal
+
+- Close `Summary + Category surface completion` as one bundle (`SUM-01..04`, `CAT-02`, `CAT-03`).
+
+### Completed
+
+- Enhanced dashboard summary/category surfaces:
+  - Added explicit range summary heading (`Day/Week/Month summary`) and category amount + percentage breakdown rows.
+  - `src/screens/DashboardScreen.tsx`
+- Upgraded donut legend detail rows to show amount in addition to percentage:
+  - `src/charts/DonutLegend.tsx`
+- Added focused UI test coverage for summary/category requirements:
+  - `tests/ui/dashboard.summaryCategory.test.tsx`
+  - Verifies explicit category amount/share rows and range-selector refetch behavior.
+- Updated planning/evidence docs:
+  - `.planning/REQUIREMENTS.md` (`SUM-01..04`, `CAT-02`, `CAT-03` moved to done)
+  - `.planning/TEST_MATRIX.md`
+  - `.planning/RELEASE_NOTES_DRAFT.md`
+  - `.planning/NEXT_SESSION_BRIEF.md`
+
+### Not Completed
+
+- Category-learning persistence across restarts (`CAT-05`) remains pending.
+- Insights ranking surface (`INS-02`) remains pending.
+
+### Evidence
+
+- `npm test -- tests/ui/dashboard.summaryCategory.test.tsx tests/ui/visuals.components.test.tsx tests/ui/screens.snapshot.test.tsx tests/services/dashboard/api.test.ts`
+  - Result: `4 passed` suites, `14 passed` tests.
+
+### Blockers
+
+- Cohort onboarding remains deferred and `BLOCKED` in release readiness until tester roster data exists.
+
+### Next Session First Step
+
+- Implement category-correction persistence durability + top-category ranking UI to close `CAT-05` and `INS-02` in one pass.
+
 ## 2026-02-25 (Current Session 26)
 
 ### Session Goal

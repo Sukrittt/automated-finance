@@ -39,6 +39,22 @@ Automatically capture and categorize UPI payment notifications to provide users 
 
 This is an existing brownfield project with mapped codebase. The notification capture pipeline, auth system, and core UI screens are implemented. Planning continues to define next features.
 
+## Progress Snapshot (2026-02-25)
+
+- `v1 requirement completion`: `12/19` = `63.2%`
+- `phase/task board completion (P0-P7)`: `16/16` = `100%`
+- `release-readiness checklist completion`: `7/8` done (`1/8` blocked) = `87.5% done`
+- `overall MVP progress (weighted estimate)`: `76%`
+
+### Progress Formula
+
+- Overall estimate uses weighted trackers:
+  - `60%` product requirement completion (`REQUIREMENTS.md`)
+  - `25%` execution phase/task completion (`TASK_BOARD.md`)
+  - `15%` release-readiness completion (`RELEASE_READINESS.md`)
+- Current weighted score:
+  - `(0.60 * 63.2) + (0.25 * 100) + (0.15 * 87.5) = 76.0`
+
 ## Constraints
 
 - **Platform**: Android only — NotificationListenerService is Android-specific

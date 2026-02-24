@@ -6,6 +6,7 @@ import { theme } from '../theme';
 interface Slice {
   label: string;
   value: number;
+  amount?: number;
 }
 
 interface Props {
@@ -71,14 +72,25 @@ export function DonutLegend({ slices, title }: Props) {
             <Text size="caption" tone="secondary" style={styles.label}>
               {slice.label}
             </Text>
-            <Text size="caption" weight="700">
-              {slice.value}%
-            </Text>
+            <View style={styles.valueWrap}>
+              <Text size="caption" weight="700">
+                {slice.value}%
+              </Text>
+              {typeof slice.amount === 'number' ? (
+                <Text size="micro" tone="muted">
+                  {formatMoney(slice.amount)}
+                </Text>
+              ) : null}
+            </View>
           </View>
         ))}
       </View>
     </View>
   );
+}
+
+function formatMoney(value: number): string {
+  return `Rs ${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
 function toneAt(idx: number): string {
@@ -148,6 +160,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
   dot: { width: 10, height: 10, borderRadius: theme.radius.pill },
   label: { flex: 1 },
+  valueWrap: { alignItems: 'flex-end' },
   emptyWrap: {
     minHeight: 80,
     alignItems: 'center',

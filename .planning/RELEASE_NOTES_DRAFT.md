@@ -11,6 +11,8 @@
 - UPI notification parsing baseline for GPay, PhonePe, Paytm, BHIM.
 - Rule-based category prediction with review correction loop.
 - Daily/weekly/monthly summary aggregation with reconciliation checks.
+- Dashboard summary surface now clearly exposes Day/Week/Month range summaries and range switching.
+- Category split now includes explicit amount + percentage breakdown rows for selected range.
 - Weekly insight generation baseline with explainable outputs.
 - Monthly budget setup/edit with local persistence for category limits.
 - OTP auth hardening with retry, timeout handling, and invalid-code lockout guard.

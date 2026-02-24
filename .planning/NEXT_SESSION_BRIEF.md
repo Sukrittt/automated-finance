@@ -20,18 +20,20 @@
 - `P7-T4` DONE: rollback rehearsal plus monitoring signal validation evidence is complete (`.planning/ROLLBACK_REHEARSAL.md`, `.planning/TEST_MATRIX.md`).
 - `BUD-01` DONE: monthly budget setup/edit UI with local persistence is implemented and dashboard budget alerts now respect saved limits.
 - Playful UX baseline DONE: button spring/tap feedback + success/warning haptics + friendly action confirmations are live on key flows.
+- `SUM-01..04` DONE: dashboard now presents explicit Day/Week/Month summaries and range switching behavior with UI coverage.
+- `CAT-02/CAT-03` DONE: category split includes amount + percentage breakdown for selected range.
 
 ## Next Session Bundle (Single Outcome)
 
-- Bundle name: `Summary + Category surface completion`
+- Bundle name: `Category learning persistence + insights surface completion`
 - Why this bundle:
-  - Budgeting slice is now fully closed (`BUD-01/02/03`), so the next highest-impact gap is core requirement surface coverage for summaries/categories.
-  - This bundle can close multiple pending Phase-1 requirements in one pass with user-visible UI + tests.
+  - Summary/category surface coverage is now closed, so next visible value is strengthening category learning continuity and top-category insights coverage.
+  - This can close additional pending requirements without scope fragmentation.
 - Deliverables in one session:
-  - Close summary requirement surface (`SUM-01..04`) in app UI parity terms.
-  - Close category requirement surface (`CAT-02`, `CAT-03`) with clear amount + percentage breakdown UX.
-  - Ensure transactions and dashboard states use consistent category labels/totals and no conflicting semantics.
-  - Add focused tests to lock summary/category display behavior.
+  - Persist review-driven category overrides beyond runtime (`CAT-05` durability).
+  - Expose top spending category rankings in insights/dashboard views (`INS-02`).
+  - Add tests for persistence/reload behavior and top-category ranking rendering.
+  - Update planning evidence + requirement state at close.
 
 ## Read First
 
