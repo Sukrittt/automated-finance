@@ -73,6 +73,8 @@ describe('dashboard summary and category surfaces', () => {
     const text = readRenderedText(tree.toJSON());
     expect(text).toContain('Week summary');
     expect(text).toContain('Category breakdown');
+    expect(text).toContain('Top categories');
+    expect(text).toMatch(/1\s*\.\s*Food/);
     expect(text).toMatch(/Rs 6,400\s*•\s*50\.6\s*%/);
     expect(text).toMatch(/Rs 3,200\s*•\s*25\.3\s*%/);
   });

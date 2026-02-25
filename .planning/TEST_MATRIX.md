@@ -14,6 +14,7 @@
 | Categorization | Rule-based category mapping accuracy                   | CAT-01, CAT-03            | Pass    | `tests/services/categorization/categoryRules.test.ts`                                                     |
 | Categorization | Dashboard category amount + share breakdown visibility | CAT-02, CAT-03            | Pass    | `tests/ui/dashboard.summaryCategory.test.tsx`, `tests/ui/visuals.components.test.tsx`                    |
 | Categorization | Single-tap manual recategorization                     | CAT-04, CAT-05            | Pass    | `tests/services/reviewQueue/api.test.ts`                                                                  |
+| Categorization | Review correction persistence reload durability         | CAT-05                    | Pass    | `tests/services/categorization/categoryRules.persistence.test.ts`                                         |
 | Summaries      | Daily summary totals and count                         | SUM-01                    | Pass    | `tests/services/summary/aggregation.test.ts`                                                              |
 | Summaries      | Weekly day-by-day summary                              | SUM-02                    | Pass    | `tests/services/summary/aggregation.test.ts`                                                              |
 | Summaries      | Monthly comparison summary                             | SUM-03                    | Pass    | `tests/services/summary/aggregation.test.ts`                                                              |
@@ -24,6 +25,7 @@
 | Visuals        | Bar chart over period                                  | VIS-02                    | Pass    | `tests/ui/visuals.components.test.tsx`                                                                    |
 | Visuals        | Line trend chart                                       | VIS-03                    | Pass    | `tests/ui/visuals.components.test.tsx`                                                                    |
 | Insights       | Weekly spend-change insight generation                 | INS-01, INS-03            | Pass    | `tests/services/insights/generator.test.ts`                                                               |
+| Insights       | Ranked top-category visibility on dashboard + insights | INS-02                    | Pass    | `tests/ui/dashboard.summaryCategory.test.tsx`, `tests/ui/insights.topCategories.test.tsx`                |
 | Insights       | Reduction recommendation explainability                | INS-04                    | Pass    | `tests/services/insights/generator.test.ts`                                                               |
 | Budgeting      | 80% threshold warning                                  | BUD-02                    | Pass    | `tests/services/budget/thresholds.test.ts`                                                                |
 | Budgeting      | 100% exceed alert                                      | BUD-03                    | Pass    | `tests/services/budget/thresholds.test.ts`                                                                |

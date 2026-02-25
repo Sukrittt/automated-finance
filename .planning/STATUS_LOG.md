@@ -1,5 +1,47 @@
 # Status Log
 
+## 2026-02-25 (Current Session 29)
+
+### Session Goal
+
+- Close `Category learning persistence + insights surface completion` as one bundle (`CAT-05`, `INS-02`).
+
+### Completed
+
+- Implemented persistent category-learning overrides with startup hydration:
+  - `src/services/categorization/categoryRules.ts`
+  - `App.tsx`
+  - Review corrections now persist to local storage and are restored across runtime restarts.
+- Updated review-edit flow to await feedback persistence after successful API updates:
+  - `src/services/reviewQueue/api.ts`
+- Added explicit ranked top-category surfaces:
+  - `src/screens/DashboardScreen.tsx` (top categories card)
+  - `src/screens/InsightsScreen.tsx` (top weekly categories card sourced from dashboard summary)
+- Added focused test coverage:
+  - `tests/services/categorization/categoryRules.persistence.test.ts`
+  - `tests/ui/insights.topCategories.test.tsx`
+  - `tests/ui/dashboard.summaryCategory.test.tsx` (ranking assertions)
+  - `tests/services/categorization/categoryRules.test.ts` (async persistence-aware feedback assertion)
+- Updated planning/evidence docs:
+  - `.planning/REQUIREMENTS.md`
+  - `.planning/TEST_MATRIX.md`
+
+### Not Completed
+
+- No cohort onboarding movement; remains deferred to final pre-release pass.
+
+### Evidence
+
+- `npm test -- tests/services/categorization/categoryRules.test.ts tests/services/categorization/categoryRules.persistence.test.ts tests/services/reviewQueue/api.test.ts tests/ui/dashboard.summaryCategory.test.tsx tests/ui/insights.topCategories.test.tsx tests/ui/dashboard.previewMode.test.tsx`
+
+### Blockers
+
+- Cohort onboarding remains deferred and `BLOCKED` in release readiness until tester roster data exists.
+
+### Next Session First Step
+
+- Close the next pending requirement bundle from `.planning/NEXT_SESSION_BRIEF.md` while preserving release-readiness blocker visibility.
+
 ## 2026-02-25 (Current Session 28)
 
 ### Session Goal

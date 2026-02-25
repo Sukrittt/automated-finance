@@ -5,6 +5,7 @@ import { theme } from '../theme';
 import { BarChart } from '../charts/BarChart';
 import { DonutLegend } from '../charts/DonutLegend';
 import { LineChart } from '../charts/LineChart';
+import { getMockDashboardSummary } from '../data/mock';
 import { DEFAULT_CATEGORY_BUDGETS, evaluateBudgetAlerts } from '../services/budget/thresholds';
 import { loadBudgetConfigs } from '../services/budget/storage';
 import { DashboardSummaryContract, fetchDashboardSummary } from '../services/dashboard/api';
@@ -68,6 +69,7 @@ export function DashboardScreen() {
   const [state, setState] = useState<DashboardSummaryContract | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
   const [budgetConfigs, setBudgetConfigs] = useState(DEFAULT_BUDGETS);
 
   useEffect(() => {
@@ -91,9 +93,12 @@ export function DashboardScreen() {
     try {
       const response = await fetchDashboardSummary(timeRange);
       setState(response);
+      setPreviewMode(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load dashboard summary.';
       setLoadError(message);
+      setState(getMockDashboardSummary(timeRange));
+      setPreviewMode(true);
     } finally {
       setLoading(false);
     }
@@ -136,6 +141,14 @@ export function DashboardScreen() {
       ),
     [budgetConfigs, state]
   );
+  const topCategories = useMemo(
+    () =>
+      state?.categorySplit
+        .slice()
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 3) ?? [],
+    [state]
+  );
 
   const hasExceededBudget = budgetAlerts.some((item) => item.level === 'exceeded');
 
@@ -155,7 +168,7 @@ export function DashboardScreen() {
         ))}
       </View>
       {loading ? <Text tone="secondary">Loading dashboard summary...</Text> : null}
-      {loadError ? (
+      {loadError && !previewMode ? (
         <Card>
           <Text tone="secondary">{loadError}</Text>
           <View style={styles.actions}>
@@ -163,7 +176,18 @@ export function DashboardScreen() {
           </View>
         </Card>
       ) : null}
-      {!loading && !loadError && !hasData ? (
+      {loadError && previewMode ? (
+        <Card>
+          <Text weight="700">Preview mode</Text>
+          <Text size="caption" tone="secondary">
+            Live dashboard data is unavailable, so you are seeing realistic demo visuals.
+          </Text>
+          <View style={styles.actions}>
+            <Button label="Retry live data" variant="outline" onPress={() => void loadSummary()} />
+          </View>
+        </Card>
+      ) : null}
+      {!loading && !hasData ? (
         <Card>
           <Text weight="700">{EMPTY_STATE.title}</Text>
           <Text tone="secondary">{EMPTY_STATE.subtitle}</Text>
@@ -172,7 +196,7 @@ export function DashboardScreen() {
           </View>
         </Card>
       ) : null}
-      {!loading && !loadError && hasData && summary ? (
+      {!loading && hasData && summary ? (
         <>
           <Card>
             <Text size="caption" tone="secondary">
@@ -224,6 +248,26 @@ export function DashboardScreen() {
               </View>
             </Card>
           ) : null}
+          {topCategories.length ? (
+            <Card>
+              <Text weight="700">Top categories</Text>
+              <Text size="caption" tone="secondary">
+                Ranked by spend amount for this range
+              </Text>
+              <View style={styles.categoryRows}>
+                {topCategories.map((item, index) => (
+                  <View key={`${item.category}-${index + 1}`} style={styles.categoryRow}>
+                    <Text size="caption" tone="secondary">
+                      {index + 1}. {item.category}
+                    </Text>
+                    <Text size="caption" weight="700">
+                      {formatMoney(item.amount)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </Card>
+          ) : null}
           {budgetAlerts.length ? (
             <Card>
               <Text weight="700">Budget alerts</Text>
@@ -248,7 +292,7 @@ export function DashboardScreen() {
           ) : null}
         </>
       ) : null}
-      {!loading && !loadError && state ? (
+      {!loading && state ? (
         <Text size="caption" tone="muted">
           Range: {state.fromISO} to {state.toISO}
         </Text>

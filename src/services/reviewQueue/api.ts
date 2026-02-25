@@ -83,7 +83,7 @@ export async function editReviewItem(id: string, data: EditReviewPayload): Promi
     body: payload
   });
 
-  recordCategoryFeedback({
+  await recordCategoryFeedback({
     merchantRaw: data.merchantRaw,
     merchantNormalized: data.merchantNormalized,
     correctedCategory: data.category

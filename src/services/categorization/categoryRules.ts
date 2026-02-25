@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { SourceApp, TransactionDirection } from '../parsing/upiParser';
 
 export const CATEGORY_PRECISION_TARGET = 0.9;
@@ -34,7 +35,16 @@ type FeedbackEntry = {
   corrections: number;
 };
 
+type PersistedFeedbackEntry = {
+  merchantKey: string;
+  category: TransactionCategory;
+  corrections: number;
+};
+
+export const CATEGORY_FEEDBACK_STORAGE_KEY = 'category_feedback_overrides_v1';
 const FEEDBACK_BY_MERCHANT = new Map<string, FeedbackEntry>();
+let hydratedFromStorage = false;
+let hydrationTask: Promise<void> | null = null;
 
 const RULES: CategoryRule[] = [
   {
@@ -103,7 +113,7 @@ export interface CategoryFeedbackInput {
   correctedCategory: string;
 }
 
-export function recordCategoryFeedback(input: CategoryFeedbackInput): void {
+export async function recordCategoryFeedback(input: CategoryFeedbackInput): Promise<void> {
   const merchantKey = normalizeMerchant(input.merchantNormalized || input.merchantRaw || '');
   if (!merchantKey) {
     return;
@@ -116,6 +126,49 @@ export function recordCategoryFeedback(input: CategoryFeedbackInput): void {
     category,
     corrections: (previous?.corrections ?? 0) + 1
   });
+
+  try {
+    await persistCategoryFeedback();
+  } catch {
+    // Keep runtime feedback even if local persistence is unavailable.
+  }
+}
+
+export async function hydrateCategoryFeedbackFromStorage(): Promise<void> {
+  if (hydratedFromStorage) {
+    return;
+  }
+
+  if (hydrationTask) {
+    await hydrationTask;
+    return;
+  }
+
+  hydrationTask = (async () => {
+    try {
+      const raw = await AsyncStorage.getItem(CATEGORY_FEEDBACK_STORAGE_KEY);
+      if (!raw) {
+        return;
+      }
+
+      const parsed = JSON.parse(raw) as unknown;
+      const normalizedEntries = normalizePersistedEntries(parsed);
+      FEEDBACK_BY_MERCHANT.clear();
+      normalizedEntries.forEach((entry) => {
+        FEEDBACK_BY_MERCHANT.set(entry.merchantKey, {
+          category: entry.category,
+          corrections: entry.corrections
+        });
+      });
+    } catch {
+      FEEDBACK_BY_MERCHANT.clear();
+    } finally {
+      hydratedFromStorage = true;
+      hydrationTask = null;
+    }
+  })();
+
+  await hydrationTask;
 }
 
 function normalizeCategory(value: string): TransactionCategory {
@@ -160,6 +213,43 @@ function normalizeMerchant(value: string): string {
     .trim();
 }
 
+function normalizePersistedEntries(input: unknown): PersistedFeedbackEntry[] {
+  if (!Array.isArray(input)) {
+    return [];
+  }
+
+  return input.flatMap((item) => {
+    if (!item || typeof item !== 'object') {
+      return [];
+    }
+
+    const candidate = item as Partial<PersistedFeedbackEntry>;
+    const merchantKey = normalizeMerchant(String(candidate.merchantKey ?? ''));
+    if (!merchantKey) {
+      return [];
+    }
+
+    const category = normalizeCategory(String(candidate.category ?? 'Others'));
+    const corrections = Math.max(1, Math.round(Number(candidate.corrections) || 0));
+
+    return [{ merchantKey, category, corrections }];
+  });
+}
+
+async function persistCategoryFeedback(): Promise<void> {
+  const persisted: PersistedFeedbackEntry[] = Array.from(FEEDBACK_BY_MERCHANT.entries()).map(
+    ([merchantKey, value]) => ({
+      merchantKey,
+      category: value.category,
+      corrections: value.corrections
+    })
+  );
+
+  await AsyncStorage.setItem(CATEGORY_FEEDBACK_STORAGE_KEY, JSON.stringify(persisted));
+}
+
 export function __resetCategoryFeedbackForTests(): void {
   FEEDBACK_BY_MERCHANT.clear();
+  hydratedFromStorage = false;
+  hydrationTask = null;
 }

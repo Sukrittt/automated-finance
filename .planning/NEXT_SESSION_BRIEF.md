@@ -22,17 +22,20 @@
 - Playful UX baseline DONE: button spring/tap feedback + success/warning haptics + friendly action confirmations are live on key flows.
 - `SUM-01..04` DONE: dashboard now presents explicit Day/Week/Month summaries and range switching behavior with UI coverage.
 - `CAT-02/CAT-03` DONE: category split includes amount + percentage breakdown for selected range.
+- Dashboard preview-mode fallback DONE: when live summary API fails, realistic mock visuals now render instead of a blank/error-only screen.
+- `CAT-05` DONE: review-driven category overrides now persist locally and reload at startup.
+- `INS-02` DONE: ranked top spending categories are visible in dashboard + insights views.
 
 ## Next Session Bundle (Single Outcome)
 
-- Bundle name: `Category learning persistence + insights surface completion`
+- Bundle name: `Beta operations handoff hardening`
 - Why this bundle:
-  - Summary/category surface coverage is now closed, so next visible value is strengthening category learning continuity and top-category insights coverage.
-  - This can close additional pending requirements without scope fragmentation.
+  - Remaining product requirement gaps are concentrated around existing insight depth and release operations execution.
+  - A single operations-focused bundle can tighten final pre-release readiness without fragmented changes.
 - Deliverables in one session:
-  - Persist review-driven category overrides beyond runtime (`CAT-05` durability).
-  - Expose top spending category rankings in insights/dashboard views (`INS-02`).
-  - Add tests for persistence/reload behavior and top-category ranking rendering.
+  - Validate end-to-end pre-release checklist against current test matrix and release docs.
+  - Reconcile release notes and support runbook with the latest shipped UX surfaces.
+  - Execute one rehearsal pass on rollback/monitoring checklist deltas.
   - Update planning evidence + requirement state at close.
 
 ## Read First
