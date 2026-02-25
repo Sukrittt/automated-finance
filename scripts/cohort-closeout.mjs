@@ -29,6 +29,15 @@ function replaceOrThrow(content, regex, replacement, errorMessage) {
   return content.replace(regex, replacement);
 }
 
+function replaceFirstMatchingOrThrow(content, replacements, errorMessage) {
+  for (const { regex, replacement } of replacements) {
+    if (regex.test(content)) {
+      return content.replace(regex, replacement);
+    }
+  }
+  throw new Error(errorMessage);
+}
+
 function extractField(content, label) {
   const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const match = content.match(new RegExp(`^- ${escaped}:\\s*\`([^\\n\`]*)\``, 'm'));
@@ -111,16 +120,33 @@ function main() {
   }
 
   let readiness = readRequired(readinessPath);
-  readiness = replaceOrThrow(
+  readiness = replaceFirstMatchingOrThrow(
     readiness,
-    /^\| Test cohort selected and onboarded \| IN_PROGRESS \| Product Ops \| ([^\n]+)$/m,
-    '| Test cohort selected and onboarded | DONE | Product Ops | $1',
-    'Could not find IN_PROGRESS row for cohort readiness.',
+    [
+      {
+        regex: /^\| Test cohort selected and onboarded \| IN_PROGRESS \| Product Ops \| ([^\n]+)$/m,
+        replacement: '| Test cohort selected and onboarded | DONE | Product Ops | $1',
+      },
+      {
+        regex: /^\| Test cohort selected and onboarded \| BLOCKED \| Product Ops \| ([^\n]+)$/m,
+        replacement: '| Test cohort selected and onboarded | DONE | Product Ops | $1',
+      },
+    ],
+    'Could not find cohort readiness row in expected IN_PROGRESS/BLOCKED format.',
   );
-  readiness = replaceOrThrow(
+  readiness = replaceFirstMatchingOrThrow(
     readiness,
-    /^- Tester invite execution and final roster lock are pending\.$/m,
-    '- No open gaps. All release readiness checklist rows are complete.',
+    [
+      {
+        regex: /^- Tester invite execution and final roster lock are pending\.$/m,
+        replacement: '- No open gaps. All release readiness checklist rows are complete.',
+      },
+      {
+        regex:
+          /^- Tester invite execution and final roster lock are deferred to final pre-release pass \(owner: Product Ops, target: [0-9]{4}-[0-9]{2}-[0-9]{2}\)\.$/m,
+        replacement: '- No open gaps. All release readiness checklist rows are complete.',
+      },
+    ],
     'Could not find expected known gap line in release readiness.',
   );
   fs.writeFileSync(readinessPath, readiness);

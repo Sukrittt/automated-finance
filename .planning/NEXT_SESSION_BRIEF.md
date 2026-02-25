@@ -2,7 +2,7 @@
 
 ## Objective
 
-- Execute one high-impact implementation bundle (not micro-tasks) while cohort onboarding stays deferred to final pre-release pass.
+- Execute one high-impact app implementation bundle (not micro-tasks). Release/cohort operations stay parked until final pre-release pass.
 
 ## Current State
 
@@ -25,41 +25,43 @@
 - Dashboard preview-mode fallback DONE: when live summary API fails, realistic mock visuals now render instead of a blank/error-only screen.
 - `CAT-05` DONE: review-driven category overrides now persist locally and reload at startup.
 - `INS-02` DONE: ranked top spending categories are visible in dashboard + insights views.
+- Operations handoff tasks are parked for now; app iteration is the active track.
+- Core preview fallback parity DONE: transactions/review queue/insights now stay usable with demo-mode content when live APIs fail.
+- UX tightening DONE: review-queue recategorization now supports quick category chips for faster edits.
+- Transactions flow polish DONE: direction chips + filter-aware empty state are implemented with UI coverage.
+- Insights freshness polish DONE: ready-state now shows `Last updated` timestamp for generated insight confidence.
+- Cross-screen freshness polish DONE: Dashboard/Transactions/Review Queue now surface `Last updated` after each load/fallback refresh.
+- Retry CTA consistency polish DONE: live reload action copy is aligned to `Retry live data` across core app screens.
+- Emulator run pipeline unblock DONE: Android debug build/install/open now succeeds locally with Expo-compatible AsyncStorage + JDK17 runtime.
+- Device walkthrough loop DONE: emulator walkthrough capture was executed and top two friction fixes are implemented with focused tests.
 
 ## Next Session Bundle (Single Outcome)
 
-- Bundle name: `Beta operations handoff hardening`
+- Bundle name: `Final pre-release operations pass`
 - Why this bundle:
-  - Remaining product requirement gaps are concentrated around existing insight depth and release operations execution.
-  - A single operations-focused bundle can tighten final pre-release readiness without fragmented changes.
+  - Core app implementation bundle is complete; remaining work is release/cohort closeout.
+  - This closes the final blocked readiness item before release decision.
 - Deliverables in one session:
-  - Validate end-to-end pre-release checklist against current test matrix and release docs.
-  - Reconcile release notes and support runbook with the latest shipped UX surfaces.
-  - Execute one rehearsal pass on rollback/monitoring checklist deltas.
-  - Update planning evidence + requirement state at close.
+  - Execute cohort onboarding evidence flow (`cohort:summary`, `cohort:evidence`, `cohort:closeout`).
+  - Fill remaining cohort execution metadata/evidence links.
+  - Move release-readiness cohort row from `BLOCKED` to `DONE` if evidence is complete.
+  - Update planning evidence docs at close.
 
 ## Read First
 
-- `.planning/BETA_PLAYBOOK.md`
-- `.planning/RELEASE_READINESS.md`
-- `.planning/RELEASE_NOTES_DRAFT.md`
-- `.planning/RELEASE_EXECUTION_RUNBOOK.md`
-- `.planning/SIGNED_BUILD_EVIDENCE.md`
-- `.planning/COHORT_INVITE_EXECUTION.md`
-- `.planning/BETA_OPERATIONS.md`
-- `.planning/ROLLBACK_REHEARSAL.md`
 - `.planning/STATUS_LOG.md`
 - `.planning/TASK_BOARD.md`
 - `.planning/DECISIONS.md`
+- `.planning/UI_GUIDELINES.md`
+- `.planning/API_CONTRACT.md`
 - `.planning/TEST_MATRIX.md`
 
 ## Suggested First Commands
 
-- `rg -n "BLOCKED|IN_PROGRESS|DONE|target:" .planning/RELEASE_READINESS.md .planning/TASK_BOARD.md`
-- `rg -n "BUD-|VIS-|Not Run|Pending implementation" .planning/TEST_MATRIX.md .planning/REQUIREMENTS.md`
+- `rg -n "DONE|IN_PROGRESS|TODO|APP-ITER" .planning/TASK_BOARD.md .planning/STATUS_LOG.md`
+- `rg -n "Preview mode|fallback|Retry live data" src/screens tests/ui`
 - `rg -n "playful|haptic|motion|Duolingo" .planning/UI_GUIDELINES.md .planning/DECISIONS.md`
 - `sed -n '1,220p' .planning/TEST_MATRIX.md`
-- `sed -n '1,220p' .planning/REQUIREMENTS.md`
 - `sed -n '1,220p' .planning/DECISIONS.md`
 - `sed -n '1,220p' .planning/UI_GUIDELINES.md`
 - `sed -n '1,220p' .planning/API_CONTRACT.md`
@@ -68,5 +70,5 @@
 
 - Keep scope to one implementation bundle only (3-4 tightly related tasks is acceptable; avoid fragmented micro-tasking).
 - Prefer quickly shippable bundles that close one user-visible outcome end-to-end.
-- Preserve release-readiness visibility: cohort onboarding stays `BLOCKED` with owner + target date until final pre-release pass.
+- Defer release/cohort operations and avoid spending implementation sessions on those items until final pre-release pass.
 - Update `.planning` docs at close with implementation evidence and any blocker date/owner movement.

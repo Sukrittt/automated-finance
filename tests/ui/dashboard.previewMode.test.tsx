@@ -52,6 +52,7 @@ describe('dashboard preview mode fallback', () => {
 
     const text = readRenderedText(tree.toJSON());
     expect(text).toContain('Preview mode');
+    expect(text).toContain('Last updated:');
     expect(text).toContain('Category split');
     expect(text).toContain('Category breakdown');
     expect(text).toContain('Retry live data');

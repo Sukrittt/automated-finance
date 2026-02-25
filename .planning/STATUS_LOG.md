@@ -1,5 +1,268 @@
 # Status Log
 
+## 2026-02-26 (Current Session 35)
+
+### Session Goal
+
+- Start the final pre-release operations pass after closing `APP-ITER-03`.
+
+### Completed
+
+- Executed cohort closeout workflow commands to validate current release-operations readiness:
+  - `npm run cohort:summary` -> `No roster rows found.`
+  - `npm run cohort:evidence` -> blocked due empty roster.
+  - `npm run cohort:closeout` -> fails validation due missing roster counts/timestamps and pending invite evidence metadata.
+
+### Not Completed
+
+- Could not advance release-readiness cohort row from `BLOCKED` without real roster/invite execution inputs.
+
+### Evidence
+
+- `npm run cohort:summary`
+- `npm run cohort:evidence`
+- `npm run cohort:closeout`
+
+### Blockers
+
+- External input required: populated cohort roster (`.planning/COHORT_ROSTER_TEMPLATE.csv`) and invite execution metadata/evidence fields in `.planning/COHORT_INVITE_EXECUTION.md`.
+
+### Next Session First Step
+
+- Populate roster + invite metadata, rerun `cohort:evidence` and `cohort:closeout`, then move cohort readiness row to `DONE`.
+
+## 2026-02-26 (Current Session 34)
+
+### Session Goal
+
+- Execute the next `APP-ITER-03` step by unblocking real emulator/device run flow for walkthrough validation.
+
+### Completed
+
+- Diagnosed and fixed Android run blockers encountered while starting emulator validation:
+  - JDK mismatch blocker (`openjdk 25.0.2` incompatible with current Gradle/Kotlin parser path) resolved by running Android build with JDK 17.
+  - AsyncStorage compatibility blocker resolved by aligning dependency to Expo SDK 53 compatible version:
+    - `@react-native-async-storage/async-storage`: `3.0.1` -> `2.1.2` via `npx expo install`.
+  - Added missing native module dependency for dev-client runtime:
+    - `expo-asset` installed via `npx expo install expo-asset`.
+- Verified Android debug build and launch flow now succeeds:
+  - `app:assembleDebug` completed successfully.
+  - APK install/open step executed on emulator (`Medium_Phone_API_36.1`, package `com.automatedfinance.app`).
+  - `adb devices -l` confirms connected emulator `emulator-5554`.
+- Re-ran focused UI regression suite after dependency alignment; all passing.
+- Executed emulator walkthrough capture across core tabs (Home/Txns/Review/Budgets/Insights/Settings) via UI hierarchy dumps.
+- Implemented next two walkthrough-driven polish fixes:
+  - Replaced dead Settings quick-action taps with explicit status feedback copy:
+    - Export now shows: `Export request flow is coming soon in this build.`
+    - Delete now shows: `Delete account requires support confirmation in this build.`
+    - File: `src/screens/SettingsScreen.tsx`
+  - Added budget-screen freshness cue after load/save/reset:
+    - `Last updated` label now appears on Monthly Budgets screen.
+    - File: `src/screens/BudgetsScreen.tsx`
+- Added focused UI coverage for these fixes:
+  - `tests/ui/settings.actions.test.tsx`
+  - `tests/ui/budgetFlow.test.tsx` (freshness label assertion)
+
+### Not Completed
+
+- No remaining app-iteration tasks inside `APP-ITER-03`.
+
+### Evidence
+
+- `JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home npm run android`
+  - Result: Android debug build/install/open succeeded.
+- `adb devices -l`
+  - Result: emulator connection confirmed (`emulator-5554`).
+- `adb shell uiautomator dump ...` walkthrough captures:
+  - Result: confirmed interactable screens and surfaced actionable UX friction for Settings/Budgets.
+- `npm test -- tests/ui/dashboard.previewMode.test.tsx tests/ui/transactions.previewMode.test.tsx tests/ui/reviewQueue.states.test.tsx tests/ui/insights.previewMode.test.tsx tests/ui/insights.freshnessLabel.test.tsx tests/ui/transactions.filters.test.tsx`
+  - Result: `6/6` suites, `9/9` tests passed.
+- `npm test -- tests/ui/settings.actions.test.tsx tests/ui/budgetFlow.test.tsx tests/ui/dashboard.previewMode.test.tsx tests/ui/transactions.previewMode.test.tsx tests/ui/reviewQueue.states.test.tsx tests/ui/insights.previewMode.test.tsx tests/ui/insights.freshnessLabel.test.tsx tests/ui/transactions.filters.test.tsx`
+  - Result: `8/8` suites, `13/13` tests passed.
+
+### Blockers
+
+- No environment blocker remains for emulator runs.
+
+### Next Session First Step
+
+- Start final pre-release pass items (release/cohort operations), since `APP-ITER-03` is now complete.
+
+## 2026-02-25 (Current Session 33)
+
+### Session Goal
+
+- Continue `APP-ITER-03` by landing the next two walkthrough-driven polish fixes with focused UI coverage.
+
+### Completed
+
+- Applied cross-screen retry CTA copy consistency for live reload actions:
+  - Standardized retry wording to `Retry live data` on core summary and queue fetch error cards.
+  - Files:
+    - `src/screens/DashboardScreen.tsx`
+    - `src/screens/TransactionsScreen.tsx`
+    - `src/screens/ReviewQueueScreen.tsx`
+    - `src/screens/InsightsScreen.tsx`
+- Added freshness feedback on additional core screens after load/fallback:
+  - `Last updated` label now appears on Dashboard, Transactions, and Review Queue once data (live or preview fallback) is loaded.
+  - Files:
+    - `src/screens/DashboardScreen.tsx`
+    - `src/screens/TransactionsScreen.tsx`
+    - `src/screens/ReviewQueueScreen.tsx`
+- Added focused UI coverage for freshness-label behavior:
+  - `tests/ui/dashboard.previewMode.test.tsx`
+  - `tests/ui/transactions.previewMode.test.tsx`
+  - `tests/ui/reviewQueue.states.test.tsx`
+
+### Not Completed
+
+- Physical device/emulator walkthrough capture remains pending in this bundle.
+
+### Evidence
+
+- `npm test -- tests/ui/dashboard.previewMode.test.tsx tests/ui/transactions.previewMode.test.tsx tests/ui/reviewQueue.states.test.tsx tests/ui/insights.previewMode.test.tsx tests/ui/insights.freshnessLabel.test.tsx tests/ui/transactions.filters.test.tsx`
+  - Result: `6/6` suites, `9/9` tests passed.
+
+### Blockers
+
+- No implementation blockers; only pending environment step is device/emulator walkthrough execution.
+
+### Next Session First Step
+
+- Run app on device/emulator, execute full walkthrough, and record the next two highest-impact friction fixes before closing `APP-ITER-03`.
+
+## 2026-02-25 (Current Session 32)
+
+### Session Goal
+
+- Shift planning to app-only iteration mode and implement the next core app bundle.
+
+### Completed
+
+- Switched planning workflow to app-only mode (release/cohort operations deferred to final pre-release pass):
+  - `.planning/EXECUTION_SYSTEM.md`
+  - `.planning/START_HERE.md`
+  - `.planning/TASK_BOARD.md`
+  - `.planning/NEXT_SESSION_BRIEF.md`
+  - `.planning/RELEASE_READINESS.md` (parking note)
+- Implemented preview-fallback parity across remaining core screens:
+  - `src/screens/TransactionsScreen.tsx`
+  - `src/screens/ReviewQueueScreen.tsx`
+  - `src/screens/InsightsScreen.tsx`
+  - Behavior: when live APIs fail, screens stay usable with realistic demo content and `Retry live data` actions.
+- Reduced recategorization friction in review queue edit flow:
+  - Added quick category chips in edit sheet for one-tap category selection.
+  - `src/screens/ReviewQueueScreen.tsx`
+- Improved transaction browsing polish:
+  - Added direction chips (`All types`, `Debits`, `Credits`) to filter visible transaction list quickly.
+  - Added filter-aware empty state copy for no-result combinations.
+  - Enforced newest-first transaction ordering regardless of API response order.
+  - `src/screens/TransactionsScreen.tsx`
+- Improved insights trust/readability polish:
+  - Added ready-state `Last updated` freshness label from insight generation timestamp.
+  - `src/screens/InsightsScreen.tsx`
+- Added/updated focused UI coverage for fallback behavior:
+  - `tests/ui/transactions.previewMode.test.tsx`
+  - `tests/ui/insights.previewMode.test.tsx`
+  - `tests/ui/reviewQueue.states.test.tsx`
+  - `tests/ui/reviewQueue.quickEdit.test.tsx`
+  - `tests/ui/transactions.filters.test.tsx`
+  - `tests/ui/insights.freshnessLabel.test.tsx`
+
+### Not Completed
+
+- Device-level manual walkthrough loop for this bundle is pending (to run in next iteration session).
+
+### Evidence
+
+- `npm test -- tests/ui/insights.freshnessLabel.test.tsx tests/ui/transactions.filters.test.tsx tests/ui/transactions.previewMode.test.tsx tests/ui/reviewQueue.quickEdit.test.tsx tests/ui/reviewQueue.states.test.tsx tests/ui/insights.previewMode.test.tsx tests/ui/insights.topCategories.test.tsx tests/ui/dashboard.previewMode.test.tsx`
+  - Result: `8/8` suites, `11/11` tests passed.
+
+### Blockers
+
+- No app-development blockers in this bundle.
+
+### Next Session First Step
+
+- Execute `APP-ITER-02`: tighten end-to-end UX flow polish (loading/empty/retry copy consistency and quick interaction friction fixes).
+
+## 2026-02-25 (Current Session 31)
+
+### Session Goal
+
+- Proceed with final closeout tasks for the remaining cohort-onboarding blocker.
+
+### Completed
+
+- Executed cohort workflow commands to validate current closeout readiness:
+  - `npm run cohort:summary` -> `No roster rows found.`
+  - `npm run cohort:evidence` -> blocked due empty roster.
+  - `npm run cohort:closeout` -> blocked by missing roster counts and pending evidence fields.
+- Hardened closeout automation for current tracker state:
+  - Updated `scripts/cohort-closeout.mjs` so readiness transition supports both `IN_PROGRESS` and `BLOCKED` cohort rows.
+  - Added known-gap replacement compatibility for both legacy pending text and current deferred-blocker wording.
+
+### Not Completed
+
+- Could not complete cohort closeout because no real tester roster rows or invite metadata are present.
+
+### Evidence
+
+- `npm run cohort:summary`
+- `npm run cohort:evidence`
+- `npm run cohort:closeout`
+
+### Blockers
+
+- External input required: populated cohort roster + invite metadata/evidence links.
+
+### Next Session First Step
+
+- Populate `.planning/COHORT_ROSTER_TEMPLATE.csv` with real tester records, run `npm run cohort:evidence`, fill remaining metadata in `.planning/COHORT_INVITE_EXECUTION.md`, then execute `npm run cohort:closeout`.
+
+## 2026-02-25 (Current Session 30)
+
+### Session Goal
+
+- Start the next operations-focused bundle and harden release handoff tracking accuracy.
+
+### Completed
+
+- Reconciled requirement state against existing implemented/tested coverage:
+  - Marked `CAT-01`, `CAT-04`, `INS-01`, `INS-03`, `INS-04` as done in `.planning/REQUIREMENTS.md`.
+- Updated progress snapshot math to reflect current tracker state:
+  - `.planning/PROJECT.md`
+  - Requirement completion now `19/19` and weighted MVP estimate updated to `98%`.
+- Reconciled release notes with latest shipped UX:
+  - Added top-category ranking and persistent category-learning entries.
+  - Removed outdated in-memory-only category feedback limitation.
+  - `.planning/RELEASE_NOTES_DRAFT.md`
+- Re-ran focused monitoring/quality-gate validation suite and refreshed evidence:
+  - `npm test -- tests/services/auth/auth.integration.test.ts tests/services/ingest/notificationIngestService.test.ts tests/services/telemetry/crash.test.ts tests/services/telemetry/runtimeReporter.test.ts tests/services/qualityGate/evaluator.test.ts`
+  - Result: `5/5` suites, `18/18` tests passed.
+- Updated readiness/rollback/test evidence docs to reflect fresh validation date:
+  - `.planning/RELEASE_READINESS.md`
+  - `.planning/ROLLBACK_REHEARSAL.md`
+  - `.planning/TEST_MATRIX.md`
+- Updated next-session bundle target to final blocker closeout:
+  - `.planning/NEXT_SESSION_BRIEF.md` now points to cohort onboarding execution closeout.
+
+### Not Completed
+
+- Cohort onboarding remains `BLOCKED` pending tester roster evidence (names/emails/acceptance).
+
+### Evidence
+
+- `npm test -- tests/services/auth/auth.integration.test.ts tests/services/ingest/notificationIngestService.test.ts tests/services/telemetry/crash.test.ts tests/services/telemetry/runtimeReporter.test.ts tests/services/qualityGate/evaluator.test.ts`
+
+### Blockers
+
+- `Test cohort selected and onboarded` remains blocked in `.planning/RELEASE_READINESS.md` (owner: Product Ops, target: 2026-03-06).
+
+### Next Session First Step
+
+- Execute cohort onboarding evidence workflow (`cohort:summary`, `cohort:evidence`, `cohort:closeout`) once roster data is available.
+
 ## 2026-02-25 (Current Session 29)
 
 ### Session Goal

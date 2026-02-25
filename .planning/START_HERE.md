@@ -54,3 +54,4 @@ Use the yeet skill to stage, commit, push, and open PR; then merge to main after
 - Never close session without a next first step.
 - Log all new decisions in `DECISIONS.md`.
 - After every session, use `yeet` and complete merge to `main`.
+- Default to app-only iteration mode; defer release/cohort operations until final pre-release pass.

@@ -44,6 +44,13 @@
 - Monitoring signal validation completed with focused suite run (`5/5` suites, `18/18` tests).
 - Runtime telemetry sink is now active for auth/ingest/crash flows; external provider integration is optional post-beta hardening, not a current blocker.
 
+## Re-validation Checkpoint (2026-02-25)
+
+- Re-ran focused monitoring + quality-gate suite:
+  - `npm test -- tests/services/auth/auth.integration.test.ts tests/services/ingest/notificationIngestService.test.ts tests/services/telemetry/crash.test.ts tests/services/telemetry/runtimeReporter.test.ts tests/services/qualityGate/evaluator.test.ts`
+- Result: `5/5` suites passed, `18/18` tests passed.
+- Outcome: rollback trigger signals and monitoring ownership checkpoints remain valid with current code state.
+
 ## Rehearsal Verdict
 
 - `PASS` for process readiness: rollback criteria and action sequence are documented and reproducible.

@@ -64,6 +64,24 @@ function formatRangeTitle(timeRange: TimeRange): string {
   return 'Month summary';
 }
 
+function formatLastUpdated(iso: string | null): string | null {
+  if (!iso) {
+    return null;
+  }
+
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 export function DashboardScreen() {
   const [timeRange, setTimeRange] = useState<TimeRange>('week');
   const [state, setState] = useState<DashboardSummaryContract | null>(null);
@@ -71,6 +89,7 @@ export function DashboardScreen() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [budgetConfigs, setBudgetConfigs] = useState(DEFAULT_BUDGETS);
+  const [lastUpdatedISO, setLastUpdatedISO] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -94,11 +113,13 @@ export function DashboardScreen() {
       const response = await fetchDashboardSummary(timeRange);
       setState(response);
       setPreviewMode(false);
+      setLastUpdatedISO(new Date().toISOString());
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load dashboard summary.';
       setLoadError(message);
       setState(getMockDashboardSummary(timeRange));
       setPreviewMode(true);
+      setLastUpdatedISO(new Date().toISOString());
     } finally {
       setLoading(false);
     }
@@ -111,6 +132,7 @@ export function DashboardScreen() {
   const summary = state?.summary;
   const hasData = (summary?.transactionCount ?? 0) > 0;
   const trend = summary ? formatTrend(summary.trendDeltaPct) : null;
+  const lastUpdatedLabel = formatLastUpdated(lastUpdatedISO);
 
   const dailySpendValues = useMemo(() => state?.dailySpend.map((item) => item.amount) ?? [], [state]);
   const dailySpendLabels = useMemo(
@@ -168,11 +190,16 @@ export function DashboardScreen() {
         ))}
       </View>
       {loading ? <Text tone="secondary">Loading dashboard summary...</Text> : null}
+      {!loading && lastUpdatedLabel ? (
+        <Text size="caption" tone="secondary">
+          Last updated: {lastUpdatedLabel}
+        </Text>
+      ) : null}
       {loadError && !previewMode ? (
         <Card>
           <Text tone="secondary">{loadError}</Text>
           <View style={styles.actions}>
-            <Button label="Retry" onPress={() => void loadSummary()} />
+            <Button label="Retry live data" onPress={() => void loadSummary()} />
           </View>
         </Card>
       ) : null}

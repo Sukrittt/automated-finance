@@ -27,9 +27,12 @@
 | P7-T2 | 7 | Crash telemetry provider integration baseline | DONE | P7-T1 | Crash capture path defined and verified in app startup |
 | P7-T3 | 7 | Release readiness package (notes/cohort/support) | DONE | P7-T2 | Release checklist items mapped/tracked; remaining cohort onboarding captured as explicit deferred blocker in release readiness |
 | P7-T4 | 7 | Monitoring + rollback runbook validation | DONE | P7-T3 | Monitoring signals and rollback triggers validated with checklist evidence |
+| APP-ITER-01 | 8 | Core screen preview resilience parity | DONE | P7-T4 | Dashboard/Transactions/Review/Insights all have usable fallback mode when live APIs fail |
+| APP-ITER-02 | 8 | End-to-end happy-path UX tightening | DONE | APP-ITER-01 | Primary user flows work smoothly with clear loading/empty/error states and consistent action copy |
+| APP-ITER-03 | 8 | Device-run iteration loop and polish backlog | DONE | APP-ITER-02 | Repeated test-and-polish cycle captured with concrete UX fixes and evidence |
 
 ## Current Session Focus
 
-- Goal: Resume implementation slices while cohort onboarding remains deferred as an explicit final-pass blocker.
-- In scope: next product implementation slice selection + execution (app code), while preserving release-readiness blocker visibility.
-- Out of scope: cohort invite execution until live tester roster data is available.
+- Goal: Complete app development iterations and keep execution fully product-focused.
+- In scope: app UX, behavior, and reliability improvements with fast implementation/test loops.
+- Out of scope: release/cohort/beta-ops execution until final pre-release pass.

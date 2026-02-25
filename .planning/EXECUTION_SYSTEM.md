@@ -125,3 +125,9 @@ Required closeout sections:
 - Canonical docs stay in this planning repo.
 - Implementation occurs in separate app repo path.
 - One milestone slice per session for speed and quality.
+
+## Current Mode (App-Only Iteration)
+
+- Active priority: app development and UX iteration only.
+- Defer release/cohort/beta-ops execution tasks until final pre-release pass.
+- During this mode, prefer screen-level implementation + tests over operational checklist work.

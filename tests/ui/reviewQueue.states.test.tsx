@@ -66,6 +66,7 @@ describe('review queue UX states', () => {
     const text = readRenderedText(tree!.toJSON());
     expect(text).toContain('All clear');
     expect(text).toContain('No pending items in your review queue.');
+    expect(text).toContain('Last updated:');
     expect(text).not.toContain('Loading review queue...');
 
     await act(async () => {
@@ -73,7 +74,7 @@ describe('review queue UX states', () => {
     });
   });
 
-  it('shows error state and retry can recover to empty state', async () => {
+  it('shows preview fallback and retry can recover to empty state', async () => {
     fetchReviewQueueMock
       .mockRejectedValueOnce(new Error('Review queue unavailable'))
       .mockResolvedValueOnce([]);
@@ -85,10 +86,13 @@ describe('review queue UX states', () => {
     });
 
     let text = readRenderedText(tree!.toJSON());
-    expect(text).toContain('Review queue unavailable');
-    expect(text).toContain('Retry');
+    expect(text).toContain('Preview mode');
+    expect(text).toContain('Last updated:');
+    expect(text).toContain('Retry live data');
 
-    const retryButton = tree!.root.findAllByType(Button).find((button) => button.props.label === 'Retry');
+    const retryButton = tree!.root
+      .findAllByType(Button)
+      .find((button) => button.props.label === 'Retry live data');
     expect(retryButton).toBeDefined();
 
     await act(async () => {
@@ -98,7 +102,7 @@ describe('review queue UX states', () => {
 
     text = readRenderedText(tree!.toJSON());
     expect(text).toContain('All clear');
-    expect(text).not.toContain('Review queue unavailable');
+    expect(text).not.toContain('Preview mode');
     expect(fetchReviewQueueMock).toHaveBeenCalledTimes(2);
 
     await act(async () => {
