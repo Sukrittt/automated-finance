@@ -57,6 +57,30 @@ function sourceAppLabel(sourceApp: TransactionListItem['sourceApp']): string {
   return 'Other';
 }
 
+function formatSectionLabel(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return 'Unknown day';
+  }
+
+  const today = new Date();
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const txnOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  const dayDiff = Math.floor((todayOnly - txnOnly) / 86400000);
+
+  if (dayDiff === 0) {
+    return 'Today';
+  }
+  if (dayDiff === 1) {
+    return 'Yesterday';
+  }
+  if (dayDiff <= 6) {
+    return 'This week';
+  }
+
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 export function TransactionsScreen() {
   const [items, setItems] = useState<TransactionListItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -94,6 +118,21 @@ export function TransactionsScreen() {
       }),
     [items, selectedDirection]
   );
+  const groupedItems = useMemo(() => {
+    return visibleItems.reduce<Array<{ label: string; items: TransactionListItem[] }>>((acc, txn) => {
+      const label = formatSectionLabel(txn.txnAtISO);
+      const group = acc.find((entry) => entry.label === label);
+      if (group) {
+        group.items.push(txn);
+      } else {
+        acc.push({
+          label,
+          items: [txn]
+        });
+      }
+      return acc;
+    }, []);
+  }, [visibleItems]);
 
   const emptyState = useMemo(() => {
     if (selectedCategory === 'All' && selectedDirection === 'all') {
@@ -197,6 +236,14 @@ export function TransactionsScreen() {
           onPress={() => setSelectedDirection('credit')}
         />
       </View>
+      {!loading && !loadError && visibleItems.length > 0 ? (
+        <Card>
+          <Text weight="700">Daily pulse</Text>
+          <Text size="caption" tone="secondary">
+            {visibleItems.length} transactions in view • {selectedDirection === 'all' ? 'All types' : selectedDirection}
+          </Text>
+        </Card>
+      ) : null}
       {loading ? <Text tone="secondary">Loading transactions...</Text> : null}
       {!loading && lastUpdatedLabel ? (
         <Text size="caption" tone="secondary">
@@ -229,23 +276,30 @@ export function TransactionsScreen() {
         </Card>
       ) : null}
       <View style={styles.list}>
-        {visibleItems.map((txn) => (
-          <Card key={txn.id}>
-            <View style={styles.row}>
-              <View style={styles.rowMeta}>
-                <Text weight="700">{txn.merchant}</Text>
-                <Text size="caption" tone="secondary">
-                  {txn.category} • {sourceAppLabel(txn.sourceApp)}
-                </Text>
-                <Text size="caption" tone="muted">
-                  {formatTxnDate(txn.txnAtISO)}
-                </Text>
-              </View>
-              <Text tone={txn.direction === 'debit' ? 'primary' : 'positive'} weight="700">
-                {formatAmount(txn.amount, txn.direction)}
-              </Text>
-            </View>
-          </Card>
+        {groupedItems.map((group) => (
+          <View key={group.label} style={styles.groupSection}>
+            <Text size="caption" tone="muted" weight="700">
+              {group.label}
+            </Text>
+            {group.items.map((txn) => (
+              <Card key={txn.id}>
+                <View style={styles.row}>
+                  <View style={styles.rowMeta}>
+                    <Text weight="700">{txn.merchant}</Text>
+                    <Text size="caption" tone="secondary">
+                      {txn.category} • {sourceAppLabel(txn.sourceApp)}
+                    </Text>
+                    <Text size="caption" tone="muted">
+                      {formatTxnDate(txn.txnAtISO)}
+                    </Text>
+                  </View>
+                  <Text tone={txn.direction === 'debit' ? 'primary' : 'positive'} weight="700">
+                    {formatAmount(txn.amount, txn.direction)}
+                  </Text>
+                </View>
+              </Card>
+            ))}
+          </View>
         ))}
       </View>
       {nextCursor && visibleItems.length > 0 ? (
@@ -273,6 +327,9 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: theme.spacing.md
+  },
+  groupSection: {
+    gap: theme.spacing.sm
   },
   rowMeta: {
     flexShrink: 1

@@ -10,7 +10,10 @@ export interface TelemetryEvent {
     | 'ingest_duplicate_dropped'
     | 'ingest_event_enqueued'
     | 'ingest_flush_succeeded'
-    | 'ingest_queue_size_sample';
+    | 'ingest_queue_size_sample'
+    | 'notification_sent'
+    | 'notification_opened'
+    | 'notification_dismissed';
   atISO: string;
   properties?: Record<string, string | number | boolean | null | undefined>;
 }

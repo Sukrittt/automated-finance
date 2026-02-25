@@ -11,13 +11,26 @@ interface Props extends TextProps {
   weight?: '400' | '500' | '600' | '700';
 }
 
+function getFontFamily(size: Size): string {
+  if (size === 'display' || size === 'h1' || size === 'h2') {
+    return theme.typography.fontFamilyHeading;
+  }
+  return theme.typography.fontFamilyBody;
+}
+
 export function Text({ tone = 'primary', size = 'body', weight = '500', style, ...rest }: Props) {
   return (
     <RNText
       {...rest}
       style={[
         styles.base,
-        { color: colorMap[tone], fontSize: theme.typography[size], fontWeight: weight },
+        {
+          color: colorMap[tone],
+          fontSize: theme.typography[size],
+          lineHeight: theme.typography.lineHeight[size],
+          fontWeight: weight,
+          fontFamily: getFontFamily(size)
+        },
         style
       ]}
     />

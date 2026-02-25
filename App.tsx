@@ -17,6 +17,14 @@ import { startIngestRuntime, stopIngestRuntime } from './src/services/ingest/run
 import { installCrashTelemetry } from './src/services/telemetry/crash';
 import { getRuntimeTelemetryReporter } from './src/services/telemetry/runtimeReporter';
 import { hydrateCategoryFeedbackFromStorage } from './src/services/categorization/categoryRules';
+import { loadStreakState } from './src/services/engagement/streak';
+import { fetchReviewQueue } from './src/services/reviewQueue/api';
+import { loadEngagementPreferences } from './src/services/engagement/preferences';
+import { setFeedbackSettings } from './src/services/feedback/playful';
+import { getFeatureFlagsForUser } from './src/config/featureFlags';
+import { loadOrCreateDailyMissions } from './src/services/engagement/missions';
+import { evaluateReminderCandidates } from './src/services/engagement/reminders';
+import { loadLeaderboardProfile } from './src/services/engagement/leaderboard';
 
 type Tab = 'home' | 'transactions' | 'review' | 'budgets' | 'insights' | 'settings';
 
@@ -36,11 +44,37 @@ export default function App() {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [tab, setTab] = useState<Tab>('home');
+  const [streakDays, setStreakDays] = useState(0);
+  const [reviewPendingCount, setReviewPendingCount] = useState(0);
+  const [featureFlags, setFeatureFlags] = useState(() =>
+    getFeatureFlagsForUser()
+  );
   const allowDevSkip = __DEV__;
 
   useEffect(() => {
     installCrashTelemetry(telemetryReporter);
   }, [telemetryReporter]);
+
+  useEffect(() => {
+    let active = true;
+
+    const hydrateFeedbackPreferences = async () => {
+      const preferences = await loadEngagementPreferences();
+      if (!active) {
+        return;
+      }
+      setFeedbackSettings({
+        reduceMotion: preferences.reduceMotion,
+        reduceHaptics: preferences.reduceHaptics
+      });
+    };
+
+    void hydrateFeedbackPreferences();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!session) {
@@ -92,6 +126,66 @@ export default function App() {
     };
   }, [authService]);
 
+  useEffect(() => {
+    if (!session) {
+      setStreakDays(0);
+      setReviewPendingCount(0);
+      setFeatureFlags(getFeatureFlagsForUser());
+      return;
+    }
+
+    let active = true;
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    const refreshMeta = async () => {
+      try {
+        const [streak, reviewQueue] = await Promise.all([loadStreakState(), fetchReviewQueue(20)]);
+        if (!active) {
+          return;
+        }
+        const flags = getFeatureFlagsForUser({ userId: session.user.id });
+        setFeatureFlags(flags);
+        setStreakDays(streak.currentStreak);
+        setReviewPendingCount(reviewQueue.length);
+
+        if (flags.engagement_notifications_v1) {
+          const preferences = await loadEngagementPreferences();
+          const missions = await loadOrCreateDailyMissions({
+            pendingReviewCount: reviewQueue.length
+          });
+          await evaluateReminderCandidates({
+            userId: session.user.id,
+            streak,
+            missions,
+            remindersEnabled: preferences.remindersEnabled,
+            telemetryReporter
+          });
+        }
+
+        if (flags.leaderboard_hooks_v1) {
+          await loadLeaderboardProfile();
+        }
+      } catch {
+        if (!active) {
+          return;
+        }
+        setReviewPendingCount(0);
+      }
+    };
+
+    void refreshMeta();
+    timer = setInterval(() => {
+      void refreshMeta();
+    }, 30000);
+
+    return () => {
+      active = false;
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [session, telemetryReporter]);
+
   const handleSignOut = async () => {
     try {
       setSigningOut(true);
@@ -138,21 +232,21 @@ export default function App() {
 
     switch (tab) {
       case 'home':
-        return <DashboardScreen />;
+        return <DashboardScreen playfulEnabled={featureFlags.playful_ui_v2} />;
       case 'transactions':
         return <TransactionsScreen />;
       case 'review':
-        return <ReviewQueueScreen />;
+        return <ReviewQueueScreen playfulEnabled={featureFlags.playful_ui_v2} />;
       case 'budgets':
         return <BudgetsScreen />;
       case 'insights':
-        return <InsightsScreen />;
+        return <InsightsScreen playfulEnabled={featureFlags.playful_ui_v2} />;
       case 'settings':
         return <SettingsScreen onSignOut={handleSignOut} signingOut={signingOut} />;
       default:
-        return <DashboardScreen />;
+        return <DashboardScreen playfulEnabled={featureFlags.playful_ui_v2} />;
     }
-  }, [allowDevSkip, authReady, authService, session, signingOut, tab]);
+  }, [allowDevSkip, authReady, authService, featureFlags.playful_ui_v2, session, signingOut, tab]);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -167,6 +261,20 @@ export default function App() {
                 <Text size="caption" tone={active ? 'primary' : 'muted'} weight={active ? '700' : '500'}>
                   {item.label}
                 </Text>
+                {featureFlags.streaks_v1 && item.key === 'home' && streakDays > 0 ? (
+                  <View style={styles.badge}>
+                    <Text size="micro" weight="700">
+                      🔥{Math.min(streakDays, 99)}
+                    </Text>
+                  </View>
+                ) : null}
+                {featureFlags.daily_missions_v1 && item.key === 'review' && reviewPendingCount > 0 ? (
+                  <View style={styles.badge}>
+                    <Text size="micro" weight="700">
+                      {Math.min(reviewPendingCount, 99)}
+                    </Text>
+                  </View>
+                ) : null}
               </Pressable>
             );
           })}
@@ -205,5 +313,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: theme.spacing.sm,
     borderRadius: theme.radius.md
+  },
+  badge: {
+    marginTop: theme.spacing.xs,
+    minWidth: 22,
+    paddingHorizontal: theme.spacing.xs,
+    paddingVertical: 2,
+    borderRadius: theme.radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.primary100,
+    borderWidth: 1,
+    borderColor: theme.colors.primary500
   }
 });
