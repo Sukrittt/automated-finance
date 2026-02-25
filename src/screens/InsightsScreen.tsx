@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Button, Card, Text } from '../components';
 import { theme } from '../theme';
 import { fetchWeeklyInsight, WeeklyInsightContract } from '../services/insights/api';
+import { fetchDashboardSummary } from '../services/dashboard/api';
 
 function getCurrentWeekStartISO(now: Date): string {
   const day = now.getDay();
@@ -28,6 +29,7 @@ export function InsightsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [autoRetryCount, setAutoRetryCount] = useState(0);
   const [nextActionSeconds, setNextActionSeconds] = useState<number | null>(null);
+  const [topCategories, setTopCategories] = useState<Array<{ category: string; amount: number }>>([]);
   const projectedOverrunLabel =
     state?.status === 'ready' ? formatMoneyFromPaise(state.insight.projectedMonthlyOverrun) : null;
 
@@ -56,9 +58,28 @@ export function InsightsScreen() {
     }
   }, [weekStartISO]);
 
+  const loadTopCategories = useCallback(async () => {
+    try {
+      const dashboard = await fetchDashboardSummary('week');
+      const ranked = dashboard.categorySplit
+        .slice()
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 3)
+        .map((item) => ({
+          category: item.category,
+          amount: item.amount
+        }));
+
+      setTopCategories(ranked);
+    } catch {
+      setTopCategories([]);
+    }
+  }, []);
+
   useEffect(() => {
     void loadInsight();
-  }, [loadInsight]);
+    void loadTopCategories();
+  }, [loadInsight, loadTopCategories]);
 
   useEffect(() => {
     if (loading) {
@@ -113,6 +134,7 @@ export function InsightsScreen() {
               onPress={() => {
                 setAutoRetryCount(0);
                 void loadInsight();
+                void loadTopCategories();
               }}
             />
           </View>
@@ -181,6 +203,23 @@ export function InsightsScreen() {
           ) : null}
         </>
       ) : null}
+      {topCategories.length ? (
+        <Card>
+          <Text size="caption" tone="secondary">
+            Top categories this week
+          </Text>
+          <View style={styles.rankingRows}>
+            {topCategories.map((item, index) => (
+              <View key={`${item.category}-${index + 1}`} style={styles.rankingRow}>
+                <Text>
+                  {index + 1}. {item.category}
+                </Text>
+                <Text weight="700">Rs {item.amount.toLocaleString('en-IN')}</Text>
+              </View>
+            ))}
+          </View>
+        </Card>
+      ) : null}
     </View>
   );
 }
@@ -192,5 +231,13 @@ const styles = StyleSheet.create({
   },
   actions: {
     marginTop: theme.spacing.md
+  },
+  rankingRows: {
+    marginTop: theme.spacing.sm,
+    gap: theme.spacing.sm
+  },
+  rankingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 });

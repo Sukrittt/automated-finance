@@ -16,6 +16,7 @@ import {
 import { startIngestRuntime, stopIngestRuntime } from './src/services/ingest/runtime';
 import { installCrashTelemetry } from './src/services/telemetry/crash';
 import { getRuntimeTelemetryReporter } from './src/services/telemetry/runtimeReporter';
+import { hydrateCategoryFeedbackFromStorage } from './src/services/categorization/categoryRules';
 
 type Tab = 'home' | 'transactions' | 'review' | 'budgets' | 'insights' | 'settings';
 
@@ -59,6 +60,7 @@ export default function App() {
 
     const bootstrap = async () => {
       try {
+        await hydrateCategoryFeedbackFromStorage();
         const nextSession = await authService.getSession();
         if (!active) {
           return;

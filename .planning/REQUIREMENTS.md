@@ -18,12 +18,12 @@
 - [x] **CAT-02**: User can view spending by category (Food, Transport, Shopping, Bills, Entertainment, Others)
 - [x] **CAT-03**: User can see category breakdown with percentage and amount
 - [ ] **CAT-04**: User can manually recategorize a transaction
-- [ ] **CAT-05**: Category suggestions improve over time based on user corrections
+- [x] **CAT-05**: Category suggestions improve over time based on user corrections
 
 ### Spending Insights
 
 - [ ] **INS-01**: User receives weekly spending insight (e.g., "You spent 30% more on dining this week")
-- [ ] **INS-02**: User can view top spending categories ranked by amount
+- [x] **INS-02**: User can view top spending categories ranked by amount
 - [ ] **INS-03**: User can see spending trends over time (increasing/decreasing)
 - [ ] **INS-04**: App suggests categories where spending can be reduced
 
@@ -69,9 +69,9 @@
 | CAT-02 | Phase 1 | Done |
 | CAT-03 | Phase 1 | Done |
 | CAT-04 | Phase 1 | Pending |
-| CAT-05 | Phase 1 | Pending |
+| CAT-05 | Phase 1 | Done |
 | INS-01 | Phase 1 | Pending |
-| INS-02 | Phase 1 | Pending |
+| INS-02 | Phase 1 | Done |
 | INS-03 | Phase 1 | Pending |
 | INS-04 | Phase 1 | Pending |
 | VIS-01 | Phase 1 | Done |
@@ -88,4 +88,4 @@
 
 ---
 *Requirements defined: 2026-02-24*
-*Last updated: 2026-02-25 after summary + category surface completion bundle*
+*Last updated: 2026-02-25 after category-learning persistence + insights ranking bundle*

@@ -64,7 +64,7 @@ describe('categoryRules', () => {
     expect(result.source).toBe('credit-default');
   });
 
-  it('uses review correction feedback on next suggestions', () => {
+  it('uses review correction feedback on next suggestions', async () => {
     const first = suggestCategoryFromParsedTransaction({
       direction: 'debit',
       merchantRaw: 'AMZN Seller Services',
@@ -73,7 +73,7 @@ describe('categoryRules', () => {
     });
     expect(first.category).toBe('Others');
 
-    recordCategoryFeedback({
+    await recordCategoryFeedback({
       merchantRaw: 'AMZN Seller Services',
       correctedCategory: 'Bills'
     });
