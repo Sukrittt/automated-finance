@@ -4,6 +4,11 @@
 
 - Closed beta operational readiness for release checklist and support/monitoring setup.
 
+## Parking Note
+
+- This checklist is intentionally parked during active app-development iterations.
+- Resume only during final pre-release pass when cohort onboarding execution starts.
+
 ## Checklist Tracker
 
 | Item | Status | Owner | Evidence | Notes |
@@ -14,7 +19,7 @@
 | Support channel and issue intake path defined | DONE | Product Ops | `.planning/BETA_OPERATIONS.md` | Canonical channel, intake template, severity escalation, and SLA documented |
 | Crash and event telemetry enabled | DONE | Engineering | `src/services/telemetry/*`, `App.tsx`, telemetry tests | Runtime structured console sink wired through auth/ingest/crash paths |
 | Monitoring checklist metrics ownership | DONE | Engineering + Product Ops | `.planning/BETA_OPERATIONS.md` | Owners assigned for OTP, parse failures, backlog, and crash-free sessions |
-| Monitoring signals validated against checklist | DONE | Engineering | `npm test -- tests/services/auth/auth.integration.test.ts tests/services/ingest/notificationIngestService.test.ts tests/services/telemetry/crash.test.ts tests/services/telemetry/runtimeReporter.test.ts tests/services/qualityGate/evaluator.test.ts`, `.planning/TEST_MATRIX.md` | Focused validation run passed (`5/5` suites, `18/18` tests) and monitoring/rollback evidence is linked |
+| Monitoring signals validated against checklist | DONE | Engineering | `npm test -- tests/services/auth/auth.integration.test.ts tests/services/ingest/notificationIngestService.test.ts tests/services/telemetry/crash.test.ts tests/services/telemetry/runtimeReporter.test.ts tests/services/qualityGate/evaluator.test.ts`, `.planning/TEST_MATRIX.md` | Focused validation run passed (`5/5` suites, `18/18` tests) on 2026-02-25 and monitoring/rollback evidence is linked |
 | Rollback criteria and action rehearsal | DONE | Engineering | `.planning/ROLLBACK_REHEARSAL.md` | Tabletop dry run completed against all rollback criteria (2026-02-24) |
 
 

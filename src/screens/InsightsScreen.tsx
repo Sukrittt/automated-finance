@@ -4,6 +4,7 @@ import { Button, Card, Text } from '../components';
 import { theme } from '../theme';
 import { fetchWeeklyInsight, WeeklyInsightContract } from '../services/insights/api';
 import { fetchDashboardSummary } from '../services/dashboard/api';
+import { getMockDashboardSummary, mockInsights } from '../data/mock';
 
 function getCurrentWeekStartISO(now: Date): string {
   const day = now.getDay();
@@ -22,6 +23,24 @@ function formatMoneyFromPaise(amount: number | undefined): string | null {
   return `Rs ${rupees.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
+function formatGeneratedAt(iso: string | undefined): string | null {
+  if (!iso) {
+    return null;
+  }
+
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 export function InsightsScreen() {
   const weekStartISO = useMemo(() => getCurrentWeekStartISO(new Date()), []);
   const [state, setState] = useState<WeeklyInsightContract | null>(null);
@@ -29,9 +48,11 @@ export function InsightsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [autoRetryCount, setAutoRetryCount] = useState(0);
   const [nextActionSeconds, setNextActionSeconds] = useState<number | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
   const [topCategories, setTopCategories] = useState<Array<{ category: string; amount: number }>>([]);
   const projectedOverrunLabel =
     state?.status === 'ready' ? formatMoneyFromPaise(state.insight.projectedMonthlyOverrun) : null;
+  const generatedAtLabel = state?.status === 'ready' ? formatGeneratedAt(state.generatedAtISO) : null;
 
   const loadInsight = useCallback(async (options?: { silent?: boolean; autoRetry?: boolean }) => {
     const silent = options?.silent ?? false;
@@ -43,14 +64,20 @@ export function InsightsScreen() {
       const response = await fetchWeeklyInsight(weekStartISO);
       setState(response);
       setAutoRetryCount(0);
+      setPreviewMode(false);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load weekly insight.';
-      setError(message);
-      if (options?.autoRetry) {
-        setAutoRetryCount((current) => current + 1);
-      } else {
-        setAutoRetryCount(0);
-      }
+      setError(null);
+      setState({
+        status: 'ready',
+        weekStartISO,
+        generatedAtISO: new Date().toISOString(),
+        insight: {
+          ...mockInsights,
+          weekStartISO
+        }
+      });
+      setAutoRetryCount(0);
+      setPreviewMode(true);
     } finally {
       if (!silent) {
         setLoading(false);
@@ -72,7 +99,16 @@ export function InsightsScreen() {
 
       setTopCategories(ranked);
     } catch {
-      setTopCategories([]);
+      const mockSummary = getMockDashboardSummary('week');
+      const ranked = mockSummary.categorySplit
+        .slice()
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, 3)
+        .map((item) => ({
+          category: item.category,
+          amount: item.amount
+        }));
+      setTopCategories(ranked);
     }
   }, []);
 
@@ -86,7 +122,7 @@ export function InsightsScreen() {
       return;
     }
 
-    if (error) {
+    if (error && !previewMode) {
       if (autoRetryCount >= 3) {
         setNextActionSeconds(null);
         return;
@@ -112,7 +148,7 @@ export function InsightsScreen() {
 
     setNextActionSeconds(null);
     return;
-  }, [autoRetryCount, error, loading, loadInsight, state]);
+  }, [autoRetryCount, error, loading, loadInsight, previewMode, state]);
 
   return (
     <View style={styles.container}>
@@ -120,7 +156,7 @@ export function InsightsScreen() {
         Weekly Insights
       </Text>
       {loading ? <Text tone="secondary">Loading weekly insight...</Text> : null}
-      {error ? (
+      {error && !previewMode ? (
         <Card>
           <Text tone="secondary">{error}</Text>
           {autoRetryCount < 3 && nextActionSeconds ? (
@@ -130,7 +166,26 @@ export function InsightsScreen() {
           ) : null}
           <View style={styles.actions}>
             <Button
-              label="Retry"
+              label="Retry live data"
+              onPress={() => {
+                setAutoRetryCount(0);
+                void loadInsight();
+                void loadTopCategories();
+              }}
+            />
+          </View>
+        </Card>
+      ) : null}
+      {previewMode ? (
+        <Card>
+          <Text weight="700">Preview mode</Text>
+          <Text size="caption" tone="secondary">
+            Live insight service is unavailable, so demo insights are shown.
+          </Text>
+          <View style={styles.actions}>
+            <Button
+              label="Retry live data"
+              variant="outline"
               onPress={() => {
                 setAutoRetryCount(0);
                 void loadInsight();
@@ -167,6 +222,11 @@ export function InsightsScreen() {
       ) : null}
       {!loading && !error && state?.status === 'ready' ? (
         <>
+          {generatedAtLabel ? (
+            <Text size="caption" tone="secondary">
+              Last updated: {generatedAtLabel}
+            </Text>
+          ) : null}
           <Card>
             <Text size="caption" tone="secondary">
               Summary

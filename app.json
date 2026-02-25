@@ -20,6 +20,9 @@
         "projectId": "162d1820-aa81-477d-8b1e-30bb94ce8881"
       }
     },
-    "owner": "sukrit04"
+    "owner": "sukrit04",
+    "plugins": [
+      "expo-asset"
+    ]
   }
 }

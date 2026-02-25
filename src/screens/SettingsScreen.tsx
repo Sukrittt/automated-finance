@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, Card, Text } from '../components';
+import { triggerLightHaptic, triggerWarningHaptic } from '../services/feedback/playful';
 import { theme } from '../theme';
 
 interface Props {
@@ -9,11 +10,24 @@ interface Props {
 }
 
 export function SettingsScreen({ onSignOut, signingOut = false }: Props) {
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const onExportData = useCallback(() => {
+    setStatusMessage('Export request flow is coming soon in this build.');
+    triggerLightHaptic();
+  }, []);
+
+  const onDeleteAccount = useCallback(() => {
+    setStatusMessage('Delete account requires support confirmation in this build.');
+    triggerWarningHaptic();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text size="h1" weight="700">
         Settings & Privacy
       </Text>
+      {statusMessage ? <Text tone="secondary">{statusMessage}</Text> : null}
       <Card>
         <Text weight="700">Notification Access</Text>
         <Text size="caption" tone="secondary">
@@ -33,8 +47,8 @@ export function SettingsScreen({ onSignOut, signingOut = false }: Props) {
         </Text>
       </Card>
       <View style={styles.actions}>
-        <Button label="Export Data" variant="outline" />
-        <Button label="Delete Account" variant="ghost" />
+        <Button label="Export Data" variant="outline" onPress={onExportData} />
+        <Button label="Delete Account" variant="ghost" onPress={onDeleteAccount} />
         <Button
           label={signingOut ? 'Signing Out...' : 'Sign Out'}
           variant="outline"

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Card, Input, Sheet, Text } from '../components';
+import { Button, Card, Chip, Input, Sheet, Text } from '../components';
 import { theme } from '../theme';
 import { triggerSuccessHaptic, triggerWarningHaptic } from '../services/feedback/playful';
+import { mockReviewQueue } from '../data/mock';
 import {
   acceptReviewItem,
   editReviewItem,
@@ -13,6 +14,8 @@ import {
 function formatAmount(value: number): string {
   return `Rs ${value.toLocaleString('en-IN')}`;
 }
+
+const QUICK_CATEGORIES = ['Food', 'Transport', 'Shopping', 'Bills', 'Entertainment', 'Others'];
 
 function formatDate(iso: string | undefined): string | null {
   if (!iso) {
@@ -31,16 +34,36 @@ function formatDate(iso: string | undefined): string | null {
   });
 }
 
+function formatLastUpdated(iso: string | null): string | null {
+  if (!iso) {
+    return null;
+  }
+
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 export function ReviewQueueScreen() {
   const [items, setItems] = useState<ReviewQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [categoryDraft, setCategoryDraft] = useState('');
   const [noteDraft, setNoteDraft] = useState('');
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [lastUpdatedISO, setLastUpdatedISO] = useState<string | null>(null);
 
   const activeItem = useMemo(
     () => items.find((item) => item.id === activeId) ?? null,
@@ -54,13 +77,20 @@ export function ReviewQueueScreen() {
     try {
       const data = await fetchReviewQueue();
       setItems(data);
+      setPreviewMode(false);
+      setLastUpdatedISO(new Date().toISOString());
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load review queue.';
       setLoadError(message);
+      setItems(mockReviewQueue);
+      setPreviewMode(true);
+      setLastUpdatedISO(new Date().toISOString());
     } finally {
       setLoading(false);
     }
   }, []);
+
+  const lastUpdatedLabel = formatLastUpdated(lastUpdatedISO);
 
   useEffect(() => {
     void loadReviewQueue();
@@ -146,11 +176,27 @@ export function ReviewQueueScreen() {
       <Text tone="secondary">Low-confidence transactions need your confirmation.</Text>
       {statusMessage ? <Text tone="positive">{statusMessage}</Text> : null}
       {loading ? <Text tone="secondary">Loading review queue...</Text> : null}
-      {loadError ? (
+      {!loading && lastUpdatedLabel ? (
+        <Text size="caption" tone="secondary">
+          Last updated: {lastUpdatedLabel}
+        </Text>
+      ) : null}
+      {loadError && !previewMode ? (
         <Card>
           <Text tone="secondary">{loadError}</Text>
           <View style={styles.actions}>
-            <Button label="Retry" onPress={() => void loadReviewQueue()} />
+            <Button label="Retry live data" onPress={() => void loadReviewQueue()} />
+          </View>
+        </Card>
+      ) : null}
+      {loadError && previewMode ? (
+        <Card>
+          <Text weight="700">Preview mode</Text>
+          <Text size="caption" tone="secondary">
+            Live review queue is unavailable, so demo review items are shown.
+          </Text>
+          <View style={styles.actions}>
+            <Button label="Retry live data" variant="outline" onPress={() => void loadReviewQueue()} />
           </View>
         </Card>
       ) : null}
@@ -206,6 +252,16 @@ export function ReviewQueueScreen() {
             placeholder="Category (e.g. Food)"
             autoCapitalize="words"
           />
+          <View style={styles.quickCategoryChips}>
+            {QUICK_CATEGORIES.map((category) => (
+              <Chip
+                key={category}
+                label={category}
+                active={categoryDraft.trim().toLowerCase() === category.toLowerCase()}
+                onPress={() => setCategoryDraft(category)}
+              />
+            ))}
+          </View>
           <Input
             value={noteDraft}
             onChangeText={setNoteDraft}
@@ -241,5 +297,10 @@ const styles = StyleSheet.create({
   sheetBody: {
     marginTop: theme.spacing.md,
     gap: theme.spacing.md
+  },
+  quickCategoryChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm
   }
 });

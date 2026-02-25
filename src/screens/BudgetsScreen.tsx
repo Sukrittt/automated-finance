@@ -26,6 +26,24 @@ function normalizeLimit(value: string): number {
   return Number(digitsOnly || '0');
 }
 
+function formatLastUpdated(iso: string | null): string | null {
+  if (!iso) {
+    return null;
+  }
+
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 export function BudgetsScreen() {
   const [configs, setConfigs] = useState<BudgetConfig[]>(DEFAULT_CATEGORY_BUDGETS);
   const [drafts, setDrafts] = useState<Record<string, string>>(() => toDraftMap(DEFAULT_CATEGORY_BUDGETS));
@@ -33,6 +51,7 @@ export function BudgetsScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [lastUpdatedISO, setLastUpdatedISO] = useState<string | null>(null);
 
   const loadBudgets = useCallback(async () => {
     setLoading(true);
@@ -41,6 +60,7 @@ export function BudgetsScreen() {
       const stored = await loadBudgetConfigs();
       setConfigs(stored);
       setDrafts(toDraftMap(stored));
+      setLastUpdatedISO(new Date().toISOString());
     } catch (loadError) {
       const message = loadError instanceof Error ? loadError.message : 'Could not load budget limits.';
       setError(message);
@@ -87,6 +107,7 @@ export function BudgetsScreen() {
       setConfigs(next);
       setDrafts(toDraftMap(next));
       setStatus('Nice! Monthly budgets saved. Alerts now track these limits.');
+      setLastUpdatedISO(new Date().toISOString());
       triggerSuccessHaptic();
     } catch (saveError) {
       const message = saveError instanceof Error ? saveError.message : 'Unable to save budget limits.';
@@ -105,6 +126,7 @@ export function BudgetsScreen() {
       setConfigs(defaults);
       setDrafts(toDraftMap(defaults));
       setStatus('Back to defaults. You can tweak these anytime.');
+      setLastUpdatedISO(new Date().toISOString());
       triggerSuccessHaptic();
     } catch (resetError) {
       const message = resetError instanceof Error ? resetError.message : 'Unable to reset budget defaults.';
@@ -115,6 +137,8 @@ export function BudgetsScreen() {
     }
   }, []);
 
+  const lastUpdatedLabel = formatLastUpdated(lastUpdatedISO);
+
   return (
     <View style={styles.container}>
       <Text size="h1" weight="700">
@@ -123,6 +147,11 @@ export function BudgetsScreen() {
       <Text tone="secondary">
         Set category limits so warnings and over-budget alerts stay personal to your goals.
       </Text>
+      {!loading && lastUpdatedLabel ? (
+        <Text size="caption" tone="secondary">
+          Last updated: {lastUpdatedLabel}
+        </Text>
+      ) : null}
       {loading ? (
         <Card>
           <ActivityIndicator color={theme.colors.textSecondary} />

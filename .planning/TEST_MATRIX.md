@@ -15,22 +15,32 @@
 | Categorization | Dashboard category amount + share breakdown visibility | CAT-02, CAT-03            | Pass    | `tests/ui/dashboard.summaryCategory.test.tsx`, `tests/ui/visuals.components.test.tsx`                    |
 | Categorization | Single-tap manual recategorization                     | CAT-04, CAT-05            | Pass    | `tests/services/reviewQueue/api.test.ts`                                                                  |
 | Categorization | Review correction persistence reload durability         | CAT-05                    | Pass    | `tests/services/categorization/categoryRules.persistence.test.ts`                                         |
+| Categorization | Review queue quick category-chip recategorization       | CAT-04                    | Pass    | `tests/ui/reviewQueue.quickEdit.test.tsx`                                                                 |
 | Summaries      | Daily summary totals and count                         | SUM-01                    | Pass    | `tests/services/summary/aggregation.test.ts`                                                              |
 | Summaries      | Weekly day-by-day summary                              | SUM-02                    | Pass    | `tests/services/summary/aggregation.test.ts`                                                              |
 | Summaries      | Monthly comparison summary                             | SUM-03                    | Pass    | `tests/services/summary/aggregation.test.ts`                                                              |
 | Summaries      | Time range selector supports daily/weekly/monthly      | SUM-04                    | Pass    | `tests/services/dashboard/api.test.ts`                                                                    |
 | Summaries      | Dashboard renders explicit range summary labels/stats  | SUM-01, SUM-02, SUM-03    | Pass    | `tests/ui/dashboard.summaryCategory.test.tsx`                                                             |
 | Summaries      | Dashboard selector refetches selected range            | SUM-04                    | Pass    | `tests/ui/dashboard.summaryCategory.test.tsx`                                                             |
+| Transactions   | Transactions preview fallback on API failure           | SUM-01                    | Pass    | `tests/ui/transactions.previewMode.test.tsx`                                                              |
+| Transactions   | Transactions direction chips filter debit/credit flows | SUM-01                    | Pass    | `tests/ui/transactions.filters.test.tsx`                                                                  |
+| Transactions   | Transactions render newest-first ordering              | SUM-01                    | Pass    | `tests/ui/transactions.filters.test.tsx`                                                                  |
 | Visuals        | Donut chart by category                                | VIS-01                    | Pass    | `tests/ui/visuals.components.test.tsx`                                                                    |
 | Visuals        | Bar chart over period                                  | VIS-02                    | Pass    | `tests/ui/visuals.components.test.tsx`                                                                    |
 | Visuals        | Line trend chart                                       | VIS-03                    | Pass    | `tests/ui/visuals.components.test.tsx`                                                                    |
 | Insights       | Weekly spend-change insight generation                 | INS-01, INS-03            | Pass    | `tests/services/insights/generator.test.ts`                                                               |
 | Insights       | Ranked top-category visibility on dashboard + insights | INS-02                    | Pass    | `tests/ui/dashboard.summaryCategory.test.tsx`, `tests/ui/insights.topCategories.test.tsx`                |
 | Insights       | Reduction recommendation explainability                | INS-04                    | Pass    | `tests/services/insights/generator.test.ts`                                                               |
+| Insights       | Insights preview fallback on API failure               | INS-01, INS-03, INS-04    | Pass    | `tests/ui/insights.previewMode.test.tsx`                                                                  |
+| Insights       | Ready-state freshness label visibility                 | INS-01                    | Pass    | `tests/ui/insights.freshnessLabel.test.tsx`                                                               |
 | Budgeting      | 80% threshold warning                                  | BUD-02                    | Pass    | `tests/services/budget/thresholds.test.ts`                                                                |
 | Budgeting      | 100% exceed alert                                      | BUD-03                    | Pass    | `tests/services/budget/thresholds.test.ts`                                                                |
 | Budgeting      | Monthly budget setup/edit persistence                  | BUD-01                    | Pass    | `tests/services/budget/storage.test.ts`, `tests/ui/budgetFlow.test.tsx`                                  |
+| Budgeting      | Budget screen freshness label after load/save          | APP-ITER-03               | Pass    | `tests/ui/budgetFlow.test.tsx`                                                                            |
 | UX             | Playful action feedback (save + correction flows)      | BUD-01, CAT-04            | Pass    | `tests/ui/budgetFlow.test.tsx`, `tests/ui/reviewQueue.states.test.tsx`, `tests/ui/screens.snapshot.test.tsx` |
+| UX             | Review queue preview fallback with live retry action   | CAT-04, CAT-05            | Pass    | `tests/ui/reviewQueue.states.test.tsx`                                                                    |
+| UX             | Dashboard/Transactions/Review queue freshness labels after load | APP-ITER-03               | Pass    | `tests/ui/dashboard.previewMode.test.tsx`, `tests/ui/transactions.previewMode.test.tsx`, `tests/ui/reviewQueue.states.test.tsx` |
+| UX             | Settings export/delete quick-action feedback copy      | APP-ITER-03               | Pass    | `tests/ui/settings.actions.test.tsx`                                                                      |
 | Auth           | OTP request/verify/retry flows                         | Platform constraint       | Pass    | `tests/services/auth/auth.integration.test.ts`                                                            |
 | Monitoring     | OTP and ingest telemetry event emission baseline       | Beta monitoring checklist | Pass    | `tests/services/auth/auth.integration.test.ts`, `tests/services/ingest/notificationIngestService.test.ts` |
 | Monitoring     | Crash telemetry handler install and capture forwarding | Beta monitoring checklist | Pass    | `tests/services/telemetry/crash.test.ts`                                                                  |
@@ -44,7 +54,7 @@
 - Parser extraction: `>=95%`
 - Category precision: `>=90%`
 
-## Latest KPI Snapshot (2026-02-24)
+## Latest KPI Snapshot (2026-02-25)
 
 - Parser extraction KPI: `100%` (`12/12` parseable corpus samples amount-matched).
 - Category precision KPI baseline: `100%` (`10/10` baseline rules corpus matched; gate `>=90%`).
@@ -53,6 +63,6 @@
 - Crash telemetry baseline: startup crash handler installation and capture forwarding validated in tests.
 - Runtime telemetry sink baseline: structured event logging and recent-event retention validated.
 - Rollback rehearsal baseline: tabletop dry run completed for all rollback criteria.
-- Monitoring validation checkpoint: focused monitoring and gate suite passed (`5/5` suites, `18/18` tests) on 2026-02-24.
+- Monitoring validation checkpoint: focused monitoring and gate suite passed (`5/5` suites, `18/18` tests) on 2026-02-25.
 - Quality gate baseline: evaluator and `GO/NO_GO` threshold behavior validated.
 - Checkpoint decision snapshot: `GO` (`P0=0`, `P1=0`, no threshold failures).

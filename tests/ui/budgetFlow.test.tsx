@@ -124,6 +124,7 @@ describe('budget setup and dashboard recomputation', () => {
 
     const text = readRenderedText(tree.toJSON() as RenderNode | RenderNode[] | null);
     expect(text).toContain('Nice! Monthly budgets saved.');
+    expect(text).toContain('Last updated:');
 
     await act(async () => {
       tree.unmount();

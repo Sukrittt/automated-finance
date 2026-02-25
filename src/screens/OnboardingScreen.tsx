@@ -72,6 +72,30 @@ function toUiError(error: unknown): string {
   return 'Could not complete sign in. Please try again.';
 }
 
+function normalizePhoneInput(value: string): string {
+  const compact = value.replace(/[\s-]/g, '');
+  if (!compact) {
+    return '';
+  }
+  if (compact.startsWith('+')) {
+    return compact;
+  }
+  if (/^\d{10}$/.test(compact)) {
+    return `+91${compact}`;
+  }
+  return compact;
+}
+
+function maskPhone(phoneE164: string): string {
+  const digits = phoneE164.replace(/[^\d]/g, '');
+  if (digits.length <= 4) {
+    return phoneE164;
+  }
+  const tail = digits.slice(-4);
+  const hidden = '*'.repeat(Math.max(3, digits.length - 4));
+  return `+${hidden}${tail}`;
+}
+
 export function OnboardingScreen({
   onContinue,
   onSkip,
@@ -79,7 +103,7 @@ export function OnboardingScreen({
   defaultCooldownSeconds = DEFAULT_COOLDOWN_SECONDS
 }: Props) {
   const [step, setStep] = useState<AuthStep>('intro');
-  const [phoneE164, setPhoneE164] = useState('');
+  const [phoneInput, setPhoneInput] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
@@ -99,20 +123,21 @@ export function OnboardingScreen({
   }, [cooldownSeconds]);
 
   const canResend = cooldownSeconds <= 0 && !submitting;
-  const otpCtaLabel = submitting ? 'Verifying...' : 'Verify OTP';
-  const requestOtpLabel = submitting ? 'Sending OTP...' : 'Send OTP';
+  const normalizedPhone = useMemo(() => normalizePhoneInput(phoneInput), [phoneInput]);
+  const maskedPhone = useMemo(() => maskPhone(normalizedPhone), [normalizedPhone]);
+  const otpCtaLabel = submitting ? 'Verifying...' : 'Verify & Continue';
+  const requestOtpLabel = submitting ? 'Sending code...' : 'Send OTP Code';
   const resendLabel = useMemo(() => {
     if (cooldownSeconds <= 0) {
-      return 'Resend OTP';
+      return 'Resend code';
     }
 
     return `Resend in ${cooldownSeconds}s`;
   }, [cooldownSeconds]);
 
   async function handleRequestOtp() {
-    const normalizedPhone = phoneE164.trim();
     if (!phoneE164Regex.test(normalizedPhone)) {
-      setErrorMessage('Enter phone number in E.164 format, for example +919876543210.');
+      setErrorMessage('Enter a valid phone number. Example: +919876543210 or 9876543210.');
       return;
     }
 
@@ -123,6 +148,7 @@ export function OnboardingScreen({
       setStep('otp');
       setCooldownSeconds(result.retryAfterSeconds ?? defaultCooldownSeconds);
       setVerifyAttemptCount(0);
+      setOtpCode('');
     } catch (error) {
       const retryAfterSeconds = getRetryAfterSecondsFromAuthError(error);
       if (retryAfterSeconds && retryAfterSeconds > 0) {
@@ -145,7 +171,7 @@ export function OnboardingScreen({
       setSubmitting(true);
       setErrorMessage(null);
       const result = await authService.verifyOtp({
-        phoneE164: phoneE164.trim(),
+        phoneE164: normalizedPhone,
         otpCode: normalizedOtpCode
       });
       setVerifyAttemptCount(0);
@@ -178,37 +204,52 @@ export function OnboardingScreen({
   return (
     <View style={styles.container}>
       <Text size="display" weight="700">
-        Automatic money tracking, finally.
+        Sign in to Auto Finance
       </Text>
       <Text tone="secondary">
-        Grant notification access to auto-detect UPI transactions, then verify your phone for secure sync.
+        Verify your phone number with OTP to keep your spending data private and synced.
       </Text>
+      <View style={styles.stepRow}>
+        <View style={[styles.stepPill, step === 'intro' ? styles.stepPillActive : null]}>
+          <Text size="micro" weight="700" tone={step === 'intro' ? 'primary' : 'muted'}>
+            1. Phone
+          </Text>
+        </View>
+        <View style={[styles.stepPill, step === 'otp' ? styles.stepPillActive : null]}>
+          <Text size="micro" weight="700" tone={step === 'otp' ? 'primary' : 'muted'}>
+            2. OTP
+          </Text>
+        </View>
+      </View>
       <Card>
         <Text size="h2" weight="700">
-          Secure onboarding
+          {step === 'intro' ? 'Welcome back' : 'Enter verification code'}
         </Text>
         {step === 'intro' ? (
           <View style={styles.list}>
-            <Text tone="secondary">1. Notification access (required for auto capture)</Text>
-            <Text tone="secondary">2. Phone OTP (account sync)</Text>
-            <Text tone="secondary">3. No READ_SMS for Play build</Text>
+            <Text tone="secondary">
+              Use your mobile number to receive a secure one-time code.
+            </Text>
             <View style={styles.form}>
               <Text size="caption" tone="secondary">
-                Phone Number (E.164)
+                Mobile number
               </Text>
               <Input
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="phone-pad"
                 placeholder="+919876543210"
-                value={phoneE164}
-                onChangeText={setPhoneE164}
+                value={phoneInput}
+                onChangeText={setPhoneInput}
               />
+              <Text size="micro" tone="muted">
+                India format supported: +919876543210 or 9876543210
+              </Text>
             </View>
           </View>
         ) : (
           <View style={styles.list}>
-            <Text tone="secondary">Code sent to {phoneE164.trim()}</Text>
+            <Text tone="secondary">Code sent to {maskedPhone}</Text>
             <View style={styles.form}>
               <Text size="caption" tone="secondary">
                 Enter 6-digit OTP
@@ -219,7 +260,7 @@ export function OnboardingScreen({
                 keyboardType="number-pad"
                 placeholder="123456"
                 value={otpCode}
-                onChangeText={setOtpCode}
+                onChangeText={(value) => setOtpCode(value.replace(/[^\d]/g, '').slice(0, 6))}
                 maxLength={6}
               />
             </View>
@@ -230,10 +271,11 @@ export function OnboardingScreen({
                 setVerifyAttemptCount(0);
                 setCooldownSeconds(0);
                 setErrorMessage(null);
+                setOtpCode('');
               }}
             >
               <Text size="caption" tone="muted">
-                Edit phone number
+                Change phone number
               </Text>
             </Pressable>
           </View>
@@ -247,6 +289,9 @@ export function OnboardingScreen({
         ) : null}
       {step === 'otp' ? (
         <View style={styles.resendRow}>
+          <Text size="micro" tone="muted">
+            Didn’t receive the code?
+          </Text>
           <Button label={resendLabel} variant="outline" disabled={!canResend} onPress={handleRequestOtp} />
         </View>
       ) : null}
@@ -262,7 +307,7 @@ export function OnboardingScreen({
       )}
       {onSkip ? (
         <View style={styles.skipRow}>
-          <Button label="Skip To Dashboard (Dev)" variant="outline" onPress={onSkip} />
+          <Button label="Skip Authentication (Dev)" variant="outline" onPress={onSkip} />
         </View>
       ) : null}
     </View>
@@ -279,6 +324,20 @@ const styles = StyleSheet.create({
   list: {
     marginTop: theme.spacing.md,
     gap: theme.spacing.sm
+  },
+  stepRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm
+  },
+  stepPill: {
+    borderRadius: theme.radius.pill,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs
+  },
+  stepPillActive: {
+    backgroundColor: theme.colors.surface
   },
   form: {
     marginTop: theme.spacing.sm,
