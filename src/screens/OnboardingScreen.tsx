@@ -6,7 +6,7 @@ import {
   type AuthSession,
   type OtpAuthService
 } from '../services/auth';
-import { Button, Card, Input, Text } from '../components';
+import { Button, Card, CoachBubble, MissionCard, Input, Text } from '../components';
 import { theme } from '../theme';
 
 interface Props {
@@ -209,6 +209,21 @@ export function OnboardingScreen({
       <Text tone="secondary">
         Verify your phone number with OTP to keep your spending data private and synced.
       </Text>
+      <Card>
+        <CoachBubble
+          mood="happy"
+          message="Welcome back. Complete sign-in to unlock today’s spending missions."
+        />
+        <View style={styles.onboardingMission}>
+          <MissionCard
+            title="First Mission"
+            description="Sign in and finish one review action to start your streak."
+            progress={step === 'otp' ? 1 : 0}
+            target={2}
+            completed={false}
+          />
+        </View>
+      </Card>
       <View style={styles.stepRow}>
         <View style={[styles.stepPill, step === 'intro' ? styles.stepPillActive : null]}>
           <Text size="micro" weight="700" tone={step === 'intro' ? 'primary' : 'muted'}>
@@ -342,6 +357,9 @@ const styles = StyleSheet.create({
   form: {
     marginTop: theme.spacing.sm,
     gap: theme.spacing.xs
+  },
+  onboardingMission: {
+    marginTop: theme.spacing.md
   },
   primaryCtaRow: {
     marginTop: theme.spacing.xs

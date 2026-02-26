@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Card, Text } from '../components';
+import { Button, Card, CoachBubble, MissionCard, Text } from '../components';
 import { theme } from '../theme';
 import { fetchWeeklyInsight, WeeklyInsightContract } from '../services/insights/api';
 import { fetchDashboardSummary } from '../services/dashboard/api';
@@ -41,7 +41,11 @@ function formatGeneratedAt(iso: string | undefined): string | null {
   });
 }
 
-export function InsightsScreen() {
+interface Props {
+  playfulEnabled?: boolean;
+}
+
+export function InsightsScreen({ playfulEnabled = true }: Props) {
   const weekStartISO = useMemo(() => getCurrentWeekStartISO(new Date()), []);
   const [state, setState] = useState<WeeklyInsightContract | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +57,8 @@ export function InsightsScreen() {
   const projectedOverrunLabel =
     state?.status === 'ready' ? formatMoneyFromPaise(state.insight.projectedMonthlyOverrun) : null;
   const generatedAtLabel = state?.status === 'ready' ? formatGeneratedAt(state.generatedAtISO) : null;
+  const insightMissionProgress = state?.status === 'ready' ? 1 : 0;
+  const insightMissionTarget = 1;
 
   const loadInsight = useCallback(async (options?: { silent?: boolean; autoRetry?: boolean }) => {
     const silent = options?.silent ?? false;
@@ -227,6 +233,17 @@ export function InsightsScreen() {
               Last updated: {generatedAtLabel}
             </Text>
           ) : null}
+          {playfulEnabled ? (
+            <Card>
+              <Text size="caption" tone="secondary">
+                Weekly Story
+              </Text>
+              <CoachBubble
+                mood="happy"
+                message="Your weekly summary is ready. Take one action now to make next week easier."
+              />
+            </Card>
+          ) : null}
           <Card>
             <Text size="caption" tone="secondary">
               Summary
@@ -260,6 +277,20 @@ export function InsightsScreen() {
               </Text>
               <Text>{projectedOverrunLabel}</Text>
             </Card>
+          ) : null}
+          {playfulEnabled ? (
+            <>
+              <MissionCard
+                title="Next Action"
+                description={state.insight.improvementTip}
+                progress={insightMissionProgress}
+                target={insightMissionTarget}
+                completed={insightMissionProgress >= insightMissionTarget}
+              />
+              <View style={styles.actions}>
+                <Button label="Apply this tip today" />
+              </View>
+            </>
           ) : null}
         </>
       ) : null}

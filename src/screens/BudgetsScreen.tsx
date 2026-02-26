@@ -9,6 +9,8 @@ import {
   saveBudgetConfigs
 } from '../services/budget/storage';
 import { triggerSuccessHaptic, triggerWarningHaptic } from '../services/feedback/playful';
+import { fetchDashboardSummary } from '../services/dashboard/api';
+import { getMockDashboardSummary } from '../data/mock';
 
 function formatMoney(value: number): string {
   return `Rs ${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -52,6 +54,7 @@ export function BudgetsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [lastUpdatedISO, setLastUpdatedISO] = useState<string | null>(null);
+  const [monthlySpendByCategory, setMonthlySpendByCategory] = useState<Record<string, number>>({});
 
   const loadBudgets = useCallback(async () => {
     setLoading(true);
@@ -72,6 +75,42 @@ export function BudgetsScreen() {
   useEffect(() => {
     void loadBudgets();
   }, [loadBudgets]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadMonthlyUsage = async () => {
+      try {
+        const summary = await fetchDashboardSummary('month');
+        if (!active) {
+          return;
+        }
+        setMonthlySpendByCategory(
+          summary.categorySplit.reduce<Record<string, number>>((acc, item) => {
+            acc[item.category] = item.amount;
+            return acc;
+          }, {})
+        );
+      } catch {
+        const mockSummary = getMockDashboardSummary('month');
+        if (!active) {
+          return;
+        }
+        setMonthlySpendByCategory(
+          mockSummary.categorySplit.reduce<Record<string, number>>((acc, item) => {
+            acc[item.category] = item.amount;
+            return acc;
+          }, {})
+        );
+      }
+    };
+
+    void loadMonthlyUsage();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const parsedDrafts = useMemo(
     () =>
@@ -168,6 +207,32 @@ export function BudgetsScreen() {
               <Text size="caption" tone="secondary">
                 Current limit: {formatMoney(item.monthlyLimit)}
               </Text>
+              <View style={styles.progressTrack}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    {
+                      width: `${Math.min(
+                        100,
+                        Math.max(
+                          0,
+                          (((monthlySpendByCategory[item.category] ?? 0) / Math.max(item.monthlyLimit, 1)) * 100)
+                        )
+                      )}%`,
+                      backgroundColor:
+                        (monthlySpendByCategory[item.category] ?? 0) > item.monthlyLimit
+                          ? theme.colors.danger500
+                          : (monthlySpendByCategory[item.category] ?? 0) >= item.monthlyLimit * 0.8
+                            ? theme.colors.warning500
+                            : theme.colors.primary500
+                    }
+                  ]}
+                />
+              </View>
+              <Text size="micro" tone="muted">
+                Spent: {formatMoney(monthlySpendByCategory[item.category] ?? 0)} •
+                {` ${(((monthlySpendByCategory[item.category] ?? 0) / Math.max(item.monthlyLimit, 1)) * 100).toFixed(1)}%`}
+              </Text>
               <Input
                 value={drafts[item.category] ?? ''}
                 onChangeText={(value) => onChangeLimit(item.category, value)}
@@ -212,5 +277,17 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: theme.spacing.sm
+  },
+  progressTrack: {
+    marginTop: theme.spacing.sm,
+    width: '100%',
+    height: 8,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.surface,
+    overflow: 'hidden'
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: theme.radius.pill
   }
 });

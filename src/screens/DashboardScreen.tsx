@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Card, Chip, Stat, Text } from '../components';
+import { Button, Card, Chip, CoachBubble, MissionCard, ProgressRing, Stat, StreakPill, Text } from '../components';
 import { theme } from '../theme';
 import { BarChart } from '../charts/BarChart';
 import { DonutLegend } from '../charts/DonutLegend';
@@ -10,6 +10,9 @@ import { DEFAULT_CATEGORY_BUDGETS, evaluateBudgetAlerts } from '../services/budg
 import { loadBudgetConfigs } from '../services/budget/storage';
 import { DashboardSummaryContract, fetchDashboardSummary } from '../services/dashboard/api';
 import { TimeRange } from '../types/view-models';
+import { completeDailyCheckIn } from '../services/engagement/streak';
+import { DailyMission } from '../services/engagement/types';
+import { loadOrCreateDailyMissions } from '../services/engagement/missions';
 
 const TIME_RANGE_OPTIONS: { label: string; value: TimeRange }[] = [
   { label: 'Day', value: 'day' },
@@ -82,7 +85,11 @@ function formatLastUpdated(iso: string | null): string | null {
   });
 }
 
-export function DashboardScreen() {
+interface Props {
+  playfulEnabled?: boolean;
+}
+
+export function DashboardScreen({ playfulEnabled = true }: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange>('week');
   const [state, setState] = useState<DashboardSummaryContract | null>(null);
   const [loading, setLoading] = useState(true);
@@ -90,6 +97,8 @@ export function DashboardScreen() {
   const [previewMode, setPreviewMode] = useState(false);
   const [budgetConfigs, setBudgetConfigs] = useState(DEFAULT_BUDGETS);
   const [lastUpdatedISO, setLastUpdatedISO] = useState<string | null>(null);
+  const [streakDays, setStreakDays] = useState(0);
+  const [dailyMissions, setDailyMissions] = useState<DailyMission[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -128,6 +137,37 @@ export function DashboardScreen() {
   useEffect(() => {
     void loadSummary();
   }, [loadSummary]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const hydrateEngagement = async () => {
+      const nextStreak = await completeDailyCheckIn();
+      const averageSpend = state?.summary.transactionCount
+        ? Math.round(state.summary.totalSpend / Math.max(state.summary.transactionCount, 1))
+        : 0;
+
+      const missions = await loadOrCreateDailyMissions({
+        pendingReviewCount: 3,
+        hasOpenedInsightToday: false,
+        spendToday: state?.summary.totalSpend ?? 0,
+        spendCap: Math.max(1800, averageSpend * 4)
+      });
+
+      if (!mounted) {
+        return;
+      }
+
+      setStreakDays(nextStreak.currentStreak);
+      setDailyMissions(missions);
+    };
+
+    void hydrateEngagement();
+
+    return () => {
+      mounted = false;
+    };
+  }, [state?.summary.totalSpend, state?.summary.transactionCount]);
 
   const summary = state?.summary;
   const hasData = (summary?.transactionCount ?? 0) > 0;
@@ -173,6 +213,11 @@ export function DashboardScreen() {
   );
 
   const hasExceededBudget = budgetAlerts.some((item) => item.level === 'exceeded');
+  const completedMissionCount = dailyMissions.filter((item) => item.progress >= item.target).length;
+  const coachMessage =
+    completedMissionCount >= dailyMissions.length && dailyMissions.length > 0
+      ? 'Perfect run today. Come back tomorrow to protect your streak.'
+      : 'Complete one more mission to keep momentum and protect your streak.';
 
   return (
     <View style={styles.container}>
@@ -189,6 +234,32 @@ export function DashboardScreen() {
           />
         ))}
       </View>
+      {playfulEnabled ? (
+        <Card>
+          <View style={styles.playfulHeader}>
+            <StreakPill days={streakDays} />
+            <ProgressRing
+              progress={completedMissionCount}
+              total={dailyMissions.length || 1}
+              label="Daily missions"
+              size={72}
+            />
+          </View>
+          <CoachBubble message={coachMessage} mood={completedMissionCount ? 'happy' : 'focus'} />
+          <View style={styles.missionList}>
+            {dailyMissions.map((mission) => (
+              <MissionCard
+                key={mission.id}
+                title={mission.title}
+                description={mission.description}
+                progress={mission.progress}
+                target={mission.target}
+                completed={mission.progress >= mission.target}
+              />
+            ))}
+          </View>
+        </Card>
+      ) : null}
       {loading ? <Text tone="secondary">Loading dashboard summary...</Text> : null}
       {!loading && lastUpdatedLabel ? (
         <Text size="caption" tone="secondary">
@@ -336,6 +407,16 @@ const styles = StyleSheet.create({
   filters: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: theme.spacing.sm
+  },
+  playfulHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: theme.spacing.md
+  },
+  missionList: {
+    marginTop: theme.spacing.md,
     gap: theme.spacing.sm
   },
   statRow: {

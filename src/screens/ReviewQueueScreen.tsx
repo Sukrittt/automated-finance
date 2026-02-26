@@ -10,6 +10,8 @@ import {
   fetchReviewQueue,
   ReviewQueueItem
 } from '../services/reviewQueue/api';
+import { DailyMission } from '../services/engagement/types';
+import { loadOrCreateDailyMissions, updateMissionProgress } from '../services/engagement/missions';
 
 function formatAmount(value: number): string {
   return `Rs ${value.toLocaleString('en-IN')}`;
@@ -52,7 +54,11 @@ function formatLastUpdated(iso: string | null): string | null {
   });
 }
 
-export function ReviewQueueScreen() {
+interface Props {
+  playfulEnabled?: boolean;
+}
+
+export function ReviewQueueScreen({ playfulEnabled = true }: Props) {
   const [items, setItems] = useState<ReviewQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -64,6 +70,8 @@ export function ReviewQueueScreen() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [lastUpdatedISO, setLastUpdatedISO] = useState<string | null>(null);
+  const [reviewMission, setReviewMission] = useState<DailyMission | null>(null);
+  const [sessionCombo, setSessionCombo] = useState(0);
 
   const activeItem = useMemo(
     () => items.find((item) => item.id === activeId) ?? null,
@@ -77,12 +85,22 @@ export function ReviewQueueScreen() {
     try {
       const data = await fetchReviewQueue();
       setItems(data);
+      const missions = await loadOrCreateDailyMissions({
+        pendingReviewCount: data.length
+      });
+      const mission = missions.find((entry) => entry.type === 'review_queue') ?? null;
+      setReviewMission(mission);
       setPreviewMode(false);
       setLastUpdatedISO(new Date().toISOString());
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to load review queue.';
       setLoadError(message);
       setItems(mockReviewQueue);
+      const missions = await loadOrCreateDailyMissions({
+        pendingReviewCount: mockReviewQueue.length
+      });
+      const mission = missions.find((entry) => entry.type === 'review_queue') ?? null;
+      setReviewMission(mission);
       setPreviewMode(true);
       setLastUpdatedISO(new Date().toISOString());
     } finally {
@@ -116,6 +134,17 @@ export function ReviewQueueScreen() {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
+  const advanceReviewMission = useCallback(async () => {
+    const progressTarget = reviewMission?.target ?? 1;
+    const nextProgress = Math.min(progressTarget, (reviewMission?.progress ?? 0) + 1);
+    const next = await updateMissionProgress('mission_review_queue', nextProgress);
+    if (!next) {
+      return;
+    }
+    const updatedMission = next.find((entry) => entry.type === 'review_queue') ?? null;
+    setReviewMission(updatedMission);
+  }, [reviewMission?.progress, reviewMission?.target]);
+
   const onAccept = useCallback(
     async (id: string) => {
       setSubmittingId(id);
@@ -123,17 +152,20 @@ export function ReviewQueueScreen() {
       try {
         await acceptReviewItem(id);
         removeProcessedItem(id);
-        setStatusMessage('Nice catch. Transaction confirmed.');
+        await advanceReviewMission();
+        setSessionCombo((prev) => prev + 1);
+        setStatusMessage('Nice catch. Transaction confirmed. Combo +1');
         triggerSuccessHaptic();
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to confirm transaction.';
         setSubmitError(message);
+        setSessionCombo(0);
         triggerWarningHaptic();
       } finally {
         setSubmittingId(null);
       }
     },
-    [removeProcessedItem]
+    [advanceReviewMission, removeProcessedItem]
   );
 
   const onSaveEdit = useCallback(async () => {
@@ -144,6 +176,7 @@ export function ReviewQueueScreen() {
     const category = categoryDraft.trim();
     if (!category) {
       setSubmitError('Category is required.');
+      triggerWarningHaptic();
       return;
     }
 
@@ -156,17 +189,28 @@ export function ReviewQueueScreen() {
         note: noteDraft.trim() || undefined
       });
       removeProcessedItem(activeItem.id);
+      await advanceReviewMission();
+      setSessionCombo((prev) => prev + 1);
       setActiveId(null);
-      setStatusMessage('Great fix. Future matches will improve from this edit.');
+      setStatusMessage('Great fix. Future matches will improve from this edit. Combo +1');
       triggerSuccessHaptic();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to submit correction.';
       setSubmitError(message);
+      setSessionCombo(0);
       triggerWarningHaptic();
     } finally {
       setSubmittingId(null);
     }
-  }, [activeItem, categoryDraft, noteDraft, removeProcessedItem]);
+  }, [activeItem, advanceReviewMission, categoryDraft, noteDraft, removeProcessedItem]);
+
+  const missionTarget = reviewMission?.target ?? 1;
+  const missionProgress = Math.min(missionTarget, reviewMission?.progress ?? 0);
+  const missionRemaining = Math.max(0, missionTarget - missionProgress);
+  const missionCopy =
+    missionRemaining === 0
+      ? 'Daily review mission complete. Great momentum.'
+      : `${missionRemaining} more confirmations to complete today’s review mission.`;
 
   return (
     <View style={styles.container}>
@@ -174,6 +218,20 @@ export function ReviewQueueScreen() {
         Review Queue
       </Text>
       <Text tone="secondary">Low-confidence transactions need your confirmation.</Text>
+      {playfulEnabled ? (
+        <Card>
+          <Text weight="700">Quick Wins</Text>
+          <Text size="caption" tone="secondary">
+            Mission: {missionProgress}/{missionTarget}
+          </Text>
+          <Text size="caption" tone="secondary">
+            {missionCopy}
+          </Text>
+          <Text size="caption" tone={sessionCombo >= 3 ? 'positive' : 'muted'}>
+            Session combo: {sessionCombo}
+          </Text>
+        </Card>
+      ) : null}
       {statusMessage ? <Text tone="positive">{statusMessage}</Text> : null}
       {loading ? <Text tone="secondary">Loading review queue...</Text> : null}
       {!loading && lastUpdatedLabel ? (
