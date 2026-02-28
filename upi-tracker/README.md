@@ -48,7 +48,21 @@ curl -X POST https://<your-render-url>/sms \
 - Headers: `x-webhook-secret: <WEBHOOK_SECRET>`
 - Body fields: `sender`, `message`, `timestamp`
 
+## Telegram direct logging (recommended)
+You can log expenses by sending messages like `Swiggy 150` to your Telegram bot.
+
+Set Telegram webhook to this endpoint:
+
+```bash
+curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook" \
+  -d "url=https://upi-notion-tracker.onrender.com/telegram/<BOT_TOKEN>"
+```
+
+Expected bot behavior:
+- Valid message (`merchant amount`) → writes to Notion and replies `Logged ✅ ...`
+- Invalid format → replies with usage hint.
+
 ## Notes
-- Duplicate prevention uses `UPI Ref` if present.
+- Duplicate prevention uses `UPI Ref` if present (SMS flow).
 - Category is auto-inferred by merchant/message keywords.
 - Adjust keyword rules in `inferCategory()` in `server.js`.

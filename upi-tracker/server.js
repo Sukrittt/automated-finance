@@ -88,7 +88,7 @@ async function isDuplicate(upiRef) {
   return (data.results || []).length > 0;
 }
 
-async function createExpense({ amount, merchant, category, upiRef, sender, rawSms, date }) {
+async function createExpense({ amount, merchant, category, upiRef, sender, rawSms, date, appName = 'GPay' }) {
   const body = {
     parent: { database_id: NOTION_DATABASE_ID },
     properties: {
@@ -96,7 +96,7 @@ async function createExpense({ amount, merchant, category, upiRef, sender, rawSm
       Amount: { number: amount ?? 0 },
       Date: { date: { start: date } },
       Category: { select: { name: category || 'Other' } },
-      App: { select: { name: 'GPay' } },
+      App: { select: { name: appName } },
       'UPI Ref': { rich_text: upiRef ? [{ text: { content: upiRef } }] : [] },
       Sender: { rich_text: sender ? [{ text: { content: sender } }] : [] },
       'Raw SMS': { rich_text: rawSms ? [{ text: { content: rawSms.slice(0, 1800) } }] : [] }
@@ -104,6 +104,25 @@ async function createExpense({ amount, merchant, category, upiRef, sender, rawSm
   };
 
   return notionRequest('/pages', 'POST', body);
+}
+
+function parseManualTelegramExpense(text) {
+  if (!text) return null;
+  const trimmed = text.trim();
+  const m = trimmed.match(/^(.+?)\s+(\d+(?:\.\d{1,2})?)$/);
+  if (!m) return null;
+  const merchant = m[1].trim();
+  const amount = Number(m[2]);
+  if (!merchant || Number.isNaN(amount)) return null;
+  return { merchant, amount };
+}
+
+async function telegramSendMessage(botToken, chatId, text) {
+  await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text })
+  });
 }
 
 app.get('/health', (_, res) => res.json({ ok: true }));
@@ -147,6 +166,46 @@ app.post('/sms', async (req, res) => {
 
     const page = await createExpense({ amount, merchant, category, upiRef, sender, rawSms: message, date });
     return res.json({ ok: true, id: page.id, amount, merchant, category, upiRef });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/telegram/:token', async (req, res) => {
+  const { token } = req.params;
+  if (!token) return res.status(400).json({ ok: false, error: 'missing token' });
+
+  try {
+    const msg = req.body?.message;
+    const chatId = msg?.chat?.id;
+    const text = msg?.text || '';
+
+    if (!chatId || !text) return res.json({ ok: true, skipped: true });
+
+    const parsed = parseManualTelegramExpense(text);
+    if (!parsed) {
+      await telegramSendMessage(token, chatId, 'Use format: merchant amount (example: Swiggy 150)');
+      return res.json({ ok: true, skipped: true, reason: 'format' });
+    }
+
+    const { merchant, amount } = parsed;
+    const category = inferCategory(merchant, text);
+    const date = new Date().toISOString();
+
+    const page = await createExpense({
+      amount,
+      merchant,
+      category,
+      upiRef: `tg-${Date.now()}`,
+      sender: `telegram:${chatId}`,
+      rawSms: `telegram: ${text}`,
+      date,
+      appName: 'GPay'
+    });
+
+    await telegramSendMessage(token, chatId, `Logged ✅ ${merchant} ₹${amount}`);
+    return res.json({ ok: true, id: page.id, merchant, amount, category });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ ok: false, error: err.message });
