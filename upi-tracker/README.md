@@ -23,6 +23,7 @@ Share the database with your Notion integration.
 5. Add environment variables:
    - `NOTION_API_KEY`
    - `NOTION_DATABASE_ID`
+   - `NOTION_DATA_SOURCE_ID`
    - `WEBHOOK_SECRET`
 
 ## 3) Test

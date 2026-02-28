@@ -7,6 +7,7 @@ app.use(express.json({ limit: '1mb' }));
 const PORT = process.env.PORT || 3000;
 const NOTION_API_KEY = process.env.NOTION_API_KEY;
 const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
+const NOTION_DATA_SOURCE_ID = process.env.NOTION_DATA_SOURCE_ID || process.env.NOTION_DATABASE_ID;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
 if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
@@ -83,7 +84,7 @@ async function isDuplicate(upiRef) {
     },
     page_size: 1
   };
-  const data = await notionRequest(`/data_sources/${NOTION_DATABASE_ID}/query`, 'POST', q);
+  const data = await notionRequest(`/data_sources/${NOTION_DATA_SOURCE_ID}/query`, 'POST', q);
   return (data.results || []).length > 0;
 }
 
