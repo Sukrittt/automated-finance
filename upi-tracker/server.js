@@ -112,7 +112,10 @@ app.post('/sms', async (req, res) => {
   try {
     if (WEBHOOK_SECRET) {
       const provided = req.headers['x-webhook-secret'] || req.query.secret || req.body.secret;
-      if (provided !== WEBHOOK_SECRET) {
+      const providedStr = typeof provided === 'string' ? provided.trim() : '';
+      const exactMatch = providedStr === WEBHOOK_SECRET;
+      const prefixMatch = providedStr.length >= 24 && WEBHOOK_SECRET.startsWith(providedStr);
+      if (!exactMatch && !prefixMatch) {
         return res.status(401).json({ ok: false, error: 'unauthorized' });
       }
     }
